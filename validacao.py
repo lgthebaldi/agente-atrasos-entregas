@@ -75,6 +75,13 @@ def _numeros_do_resumo(obj, saida: set[float]) -> set[float]:
     return saida
 
 
+def _para_numero(bruto: str) -> float:
+    """Entende '28,2', '28.2' e o milhar brasileiro '1.232' (= 1232)."""
+    if re.fullmatch(r"\d{1,3}(?:\.\d{3})+(?:,\d+)?", bruto):
+        return float(bruto.replace(".", "").replace(",", "."))
+    return float(bruto.replace(",", "."))
+
+
 # Limites que vêm do próprio prompt/negócio, não dos dados
 LIMITES_DO_PROMPT = {19, 21, 4, 50, 8, 2, 3, 5}
 
@@ -85,9 +92,9 @@ def checar_numeros(diagnostico: dict, resumo: dict) -> list[str]:
     suspeitos = []
     for p in diagnostico["padroes"]:
         texto = " ".join([p["evidencia"], p["causa_provavel"]])
-        for bruto in re.findall(r"\d+(?:[.,]\d+)?", texto):
-            x = float(bruto.replace(",", "."))
-            tem_decimal = ("," in bruto) or ("." in bruto)
+        for bruto in re.findall(r"\d{1,3}(?:\.\d{3})+(?:,\d+)?|\d+(?:[.,]\d+)?", texto):
+            x = _para_numero(bruto)
+            tem_decimal = "," in bruto or (("." in bruto) and not re.fullmatch(r"\d{1,3}(?:\.\d{3})+", bruto))
             tolerancia = 0.05 if tem_decimal else 0.5  # "~25 min" pode arredondar 25,3
             if not any(abs(x - k) <= tolerancia for k in conhecidos):
                 suspeitos.append(bruto)

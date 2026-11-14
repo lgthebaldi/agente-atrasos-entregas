@@ -47,6 +47,9 @@ Regras:
 - Ordene do maior para o menor impacto, usando o campo excesso_atrasados (já calculado).
 - Ações devem ser práticas e testáveis em poucas semanas.
 - Escreva em português do Brasil, para um gestor sem conhecimento técnico.
+- Não use nomes técnicos de campos (como excesso_atrasados ou taxa_atraso_pct): escreva por extenso,
+  por exemplo "355 atrasos acima do esperado".
+- Escreva números no padrão brasileiro, com vírgula decimal (ex.: 28,2%).
 """
 
 
