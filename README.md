@@ -2,6 +2,8 @@
 
 **▶️ Teste agora: [agente-atrasos.streamlit.app](https://agente-atrasos.streamlit.app/)** (clique em "Usar base de exemplo")
 
+![Demonstração: mapa de São Paulo com o filtro "19h–21h com chuva" (a taxa de atraso vai de 28% para 81%) e o diagnóstico escrito pela IA](docs/demo.gif)
+
 Um gestor de operações envia a base de entregas, e o app mostra **onde os atrasos se concentram, por que acontecem e o que fazer**, em linguagem simples, com o diagnóstico escrito por IA **e validado**.
 
 > Todos os dados são **fictícios**, gerados por `gerar_dados.py`. Nenhum dado real de empresa foi usado.
@@ -142,3 +144,7 @@ python validacao.py --execucoes 3                       # base com padrões
 python gerar_dados.py --controle                        # cria a base sem padrões
 python validacao.py --base data/entregas_controle.csv --controle
 ```
+
+## Licença
+
+[MIT](./LICENSE). Os dados são fictícios e podem ser usados livremente.
