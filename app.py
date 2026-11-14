@@ -2,6 +2,7 @@
 Interface Streamlit do Agente de Análise de Atrasos.
 Rodar localmente:  streamlit run app.py
 """
+import hashlib
 import json
 from pathlib import Path
 
@@ -56,11 +57,17 @@ def ler_upload(arquivo) -> pd.DataFrame | None:
 
 
 # ---------- IA ----------
+def _versao_prompt() -> str:
+    """Impressão digital do prompt: se o prompt mudar, o diagnóstico guardado deixa de valer."""
+    return hashlib.sha1(agente.PROMPT_SISTEMA.encode("utf-8")).hexdigest()[:10]
+
+
 @st.cache_data(ttl=6 * 3600, show_spinner=False)
-def diagnostico_em_cache(resumo_json: str, modelos: tuple[str, ...]) -> dict:
+def diagnostico_em_cache(resumo_json: str, modelos: tuple[str, ...], versao_prompt: str) -> dict:
     """
-    O mesmo resumo gera o mesmo pedido à IA; o resultado é reaproveitado por todos
-    os visitantes por 6 h. Erros não ficam em cache. Isso poupa a cota gratuita do Gemini.
+    O mesmo resumo + o mesmo prompt geram o mesmo pedido à IA; o resultado é reaproveitado por
+    todos os visitantes por 6 h. Erros não ficam em cache. Isso poupa a cota gratuita do Gemini.
+    `versao_prompt` só entra na chave do cache (um prompt novo não reaproveita texto antigo).
     """
     return agente.gerar_diagnostico(json.loads(resumo_json), modelos=list(modelos))
 
@@ -70,12 +77,12 @@ def obter_diagnostico(resumo: dict, eh_exemplo: bool) -> dict:
     if eh_exemplo:
         # Base de exemplo: só o modelo principal; se falhar, mostra a execução validada salva.
         try:
-            return diagnostico_em_cache(resumo_json, (agente.modelos_a_tentar()[0],))
+            return diagnostico_em_cache(resumo_json, (agente.modelos_a_tentar()[0],), _versao_prompt())
         except agente.ErroDiagnostico:
             salvo = json.loads(DIAGNOSTICO_SALVO.read_text(encoding="utf-8"))
             return {**salvo, "salvo": True}
     # Base enviada pelo usuário: principal + modelos reserva.
-    return diagnostico_em_cache(resumo_json, tuple(agente.modelos_a_tentar()))
+    return diagnostico_em_cache(resumo_json, tuple(agente.modelos_a_tentar()), _versao_prompt())
 
 
 # ---------- gráficos ----------
