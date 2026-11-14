@@ -75,9 +75,9 @@ def diagnostico_em_cache(resumo_json: str, modelos: tuple[str, ...], versao_prom
 def obter_diagnostico(resumo: dict, eh_exemplo: bool) -> dict:
     resumo_json = json.dumps(resumo, ensure_ascii=False, sort_keys=True)
     if eh_exemplo:
-        # Base de exemplo: só o modelo principal; se falhar, mostra a execução validada salva.
+        # Base de exemplo: só os modelos validados (4/4); se falharem, mostra a execução salva.
         try:
-            return diagnostico_em_cache(resumo_json, (agente.modelos_a_tentar()[0],), _versao_prompt())
+            return diagnostico_em_cache(resumo_json, tuple(agente.MODELOS_VALIDADOS), _versao_prompt())
         except agente.ErroDiagnostico:
             salvo = json.loads(DIAGNOSTICO_SALVO.read_text(encoding="utf-8"))
             return {**salvo, "salvo": True}

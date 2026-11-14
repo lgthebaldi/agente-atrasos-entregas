@@ -109,7 +109,12 @@ def validar(base: Path, execucoes: int, nivel: str | None, modelo: str | None, c
     for i in range(1, execucoes + 1):
         if i > 1:
             time.sleep(pausa_s)  # respeita o limite de chamadas por minuto do plano gratuito
-        r = agente.gerar_diagnostico(resumo, nivel=nivel, modelos=[modelo] if modelo else None)
+        try:
+            r = agente.gerar_diagnostico(resumo, nivel=nivel, modelos=[modelo] if modelo else None)
+        except agente.ErroDiagnostico as e:
+            print(f"Execução {i}: FALHOU ({e}) | detalhe: {e.detalhe[:300]}")
+            resultados.append({"execucao": i, "erro": str(e), "detalhe": e.detalhe})
+            continue
         encontrados, extras = checar_padroes(r["diagnostico"])
         suspeitos = checar_numeros(r["diagnostico"], resumo)
         resultados.append({
@@ -140,7 +145,12 @@ def main():
     args = ap.parse_args()
 
     saida = validar(args.base, args.execucoes, args.nivel, args.modelo, args.controle, args.pausa)
-    rs = saida["resultados"]
+    rs = [r for r in saida["resultados"] if "erro" not in r]
+    falhas = len(saida["resultados"]) - len(rs)
+    if falhas:
+        print(f"Execuções que falharam (cota/indisponibilidade): {falhas}")
+    if not rs:
+        return
     if not args.controle:
         print("\nAcertos por padrão:")
         for nome in PADROES_PLANTADOS:
