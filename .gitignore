@@ -1,0 +1,14 @@
+# Segredos
+.env
+.streamlit/secrets.toml
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+
+# Sistema / editores
+.DS_Store
+.vscode/
+.idea/
