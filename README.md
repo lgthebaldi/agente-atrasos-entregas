@@ -16,6 +16,7 @@ Atraso de entrega afeta todo mundo ao mesmo tempo: o cliente espera mais, o entr
 
 1. **Envie a base** de pedidos (ou use a base de exemplo com 5.000 pedidos).
 2. **Veja onde está o atraso**: taxa de atraso por região, horário, chuva, modal, dia e restaurante, e as combinações que mais pesam.
+   - **Mapa interativo de São Paulo**: a cidade dividida em quadrados pintados pela % de atraso, com filtros de hora, chuva e modal. Escolha "19h–21h com chuva" e veja a taxa ir de 28% para 81%.
 3. **Receba o diagnóstico da IA**: de 3 a 5 padrões, cada um com evidência numérica, causa provável, ação sugerida e métrica para acompanhar.
 
 ## Como funciona
@@ -38,7 +39,7 @@ flowchart LR
 
 | Arquivo | Papel |
 |---|---|
-| `app.py` | Interface (Streamlit) |
+| `app.py` | Interface (Streamlit), incluindo o mapa (pydeck) |
 | `analise.py` | Todos os cálculos (funções puras do pandas) |
 | `agente.py` | Prompt, chamada ao Gemini, leitura do JSON, modelos reserva |
 | `validacao.py` | Testa se a IA acha os padrões certos e se inventa números |
@@ -108,6 +109,7 @@ O plano gratuito do Gemini permite **cerca de 20 diagnósticos por dia por model
 ## Limitações
 
 - Os dados são **fictícios**. Os padrões foram plantados para permitir a validação.
+- As localizações do mapa também são fictícias (sorteadas dentro de cada zona). Áreas com menos de 8 pedidos não são pintadas, para não mostrar porcentagens de amostras pequenas.
 - **Correlação não é causalidade.** A "causa provável" é uma hipótese a testar, não uma conclusão.
 - A IA depende da qualidade das estatísticas: se uma variável importante não estiver na base (trânsito, por exemplo), ela não aparece no diagnóstico.
 - O teste negativo ainda não foi repetido no modelo principal, por causa da cota diária.
@@ -118,6 +120,7 @@ O plano gratuito do Gemini permite **cerca de 20 diagnósticos por dia por model
 - Usar **previsão de chuva** para agir *antes* do pico (reforço de entregadores, prazo prometido ajustado).
 - **Alerta para a cozinha** quando o tempo de preparo de um restaurante estoura o padrão.
 - Medir cada ação sugerida com **teste A/B** antes de expandir.
+- Cruzar o mapa com **dados abertos reais**: trânsito (CET-SP) e chuva por estação (INMET).
 
 ## Como rodar localmente
 

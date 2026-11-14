@@ -7,6 +7,7 @@ from pathlib import Path
 
 import altair as alt
 import pandas as pd
+import pydeck as pdk
 import streamlit as st
 
 import agente
@@ -234,6 +235,101 @@ def tela_diagnostico(d: pd.DataFrame):
         st.json(resumo, expanded=False)
 
 
+# ---------- mapa ----------
+# Rampa sequencial de um só tom (laranja), do claro (pouco atraso) ao escuro (muito atraso).
+FAIXAS_MAPA = [  # (limite superior da faixa em %, cor RGB, rótulo)
+    (15, [253, 224, 204], "até 15%"),
+    (30, [249, 186, 146], "15–30%"),
+    (45, [243, 143, 92], "30–45%"),
+    (60, [229, 101, 45], "45–60%"),
+    (75, [186, 72, 24], "60–75%"),
+    (101, [128, 45, 12], "acima de 75%"),
+]
+
+
+def cor_faixa(taxa: float) -> list[int]:
+    for limite, cor, _ in FAIXAS_MAPA:
+        if taxa < limite:
+            return cor
+    return FAIXAS_MAPA[-1][1]
+
+
+def legenda_mapa() -> str:
+    itens = "".join(
+        f'<span style="display:inline-flex;align-items:center;margin-right:14px;white-space:nowrap">'
+        f'<span style="width:14px;height:14px;border-radius:3px;margin-right:6px;'
+        f'background:rgb({c[0]},{c[1]},{c[2]})"></span>{rotulo}</span>'
+        for _, c, rotulo in FAIXAS_MAPA
+    )
+    return f'<div style="font-size:0.85rem;line-height:1.9">% de pedidos atrasados: {itens}</div>'
+
+
+def tela_mapa(d: pd.DataFrame):
+    if not {"latitude", "longitude"} <= set(d.columns):
+        st.info("Esta base não tem as colunas latitude e longitude, então o mapa não está disponível. "
+                "A base de exemplo tem.")
+        return
+    st.write(
+        "Cada quadrado reúne os pedidos daquela área e é pintado pela **% de pedidos atrasados**. "
+        "Use os filtros para ver **quando** e **onde** o atraso aparece."
+    )
+    c1, c2, c3 = st.columns([2, 1.2, 1.2])
+    horas = c1.slider("Hora do pedido", 10, 23, (10, 23))
+    chuva = c2.radio("Chuva", ["Todas", "Com chuva", "Sem chuva"], horizontal=True)
+    modal = c3.radio("Modal", ["Todos", "Moto", "Bicicleta"], horizontal=True)
+    st.caption("💡 Experimente: 19h–21h com chuva. Ou só Bicicleta.")
+
+    f = d[d["hora_pedido"].between(*horas)]
+    if chuva != "Todas":
+        f = f[f["chuva_bool"] == (chuva == "Com chuva")]
+    if modal != "Todos":
+        f = f[f["modal"] == modal]
+    if f.empty:
+        st.warning("Nenhum pedido com esses filtros.")
+        return
+
+    geral = analise.kpis(d)["taxa_atraso_pct"]
+    k = analise.kpis(f)
+    m1, m2, m3 = st.columns(3)
+    m1.metric("Pedidos no filtro", f"{k['pedidos']:,}".replace(",", "."))
+    diferenca = k["taxa_atraso_pct"] - geral
+    m2.metric("Taxa de atraso", f"{k['taxa_atraso_pct']:.1f}%".replace(".", ","),
+              delta=None if abs(diferenca) < 0.05 else
+              f"{diferenca:+.1f}".replace(".", ",") + " pontos vs. média geral",
+              delta_color="inverse")
+    m3.metric("Atraso médio (atrasados)", f"{k['atraso_medio_min']:.1f} min".replace(".", ","))
+
+    grade, tamanho = analise.grade_adaptativa(f)
+    if grade.empty:
+        st.warning("Poucos pedidos com esses filtros para desenhar o mapa com segurança.")
+        return
+    grade["cor"] = grade["taxa_atraso_pct"].map(cor_faixa)
+    grade["taxa_txt"] = grade["taxa_atraso_pct"].map(lambda v: f"{v:.1f}%".replace(".", ","))
+    camada = pdk.Layer(
+        "PolygonLayer", data=grade, get_polygon="poligono", get_fill_color="cor",
+        get_line_color=[255, 255, 255], line_width_min_pixels=1, opacity=0.8,
+        pickable=True, auto_highlight=True,
+    )
+    vista = pdk.ViewState(latitude=-23.565, longitude=-46.58, zoom=10.2)
+    st.pydeck_chart(pdk.Deck(
+        layers=[camada], initial_view_state=vista, map_provider="carto", map_style="light",
+        tooltip={"html": "<b>{taxa_txt}</b> atrasados<br/>{atrasados} de {pedidos} pedidos<br/>{regiao}"},
+    ), height=520)
+    st.markdown(legenda_mapa(), unsafe_allow_html=True)
+    cobertos = grade["pedidos"].sum()
+    milhar = lambda n: f"{n:,}".replace(",", ".")  # noqa: E731
+    st.caption(
+        f"Quadrados de ~{str(tamanho).replace('.', ',')} km. Áreas com menos de "
+        f"{analise.MIN_PEDIDOS_CELULA} pedidos não são pintadas, porque amostras pequenas enganam "
+        f"({milhar(int(cobertos))} de {milhar(len(f))} pedidos aparecem). Localizações fictícias."
+    )
+
+    with st.expander("Taxa de atraso por região, com estes filtros"):
+        t = analise.taxa_por(f, "regiao")
+        st.dataframe(t.rename(columns={"regiao": "Região", "pedidos": "Pedidos", "atrasados": "Atrasados",
+                                       "taxa_atraso_pct": "% atrasados"}), hide_index=True, width="stretch")
+
+
 # ---------- app ----------
 if "df" not in st.session_state:
     tela_inicio()
@@ -246,10 +342,13 @@ else:
             st.session_state.pop(chave, None)
         st.rerun()
     st.title("🛵 Diagnóstico de atrasos")
-    aba1, aba2, aba3 = st.tabs(["📊 Visão geral", "📍 Onde está o atraso", "🤖 Diagnóstico da IA"])
+    aba1, aba_mapa, aba2, aba3 = st.tabs(
+        ["📊 Visão geral", "🗺️ Mapa", "📍 Onde está o atraso", "🤖 Diagnóstico da IA"])
     with aba1:
         tela_visao_geral(d)
     with aba2:
         tela_onde_esta(d)
+    with aba_mapa:
+        tela_mapa(d)
     with aba3:
         tela_diagnostico(d)

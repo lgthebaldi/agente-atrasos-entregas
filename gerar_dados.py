@@ -117,6 +117,21 @@ for i in range(N):
     })
 
 df = pd.DataFrame(linhas).sort_values(["data", "hora_pedido"]).reset_index(drop=True)
+
+# Coordenadas FICTÍCIAS do endereço de entrega, sorteadas dentro de cada zona de São Paulo
+# (centro aproximado e espalhamento em graus). Usa um gerador separado, então as colunas
+# acima ficam idênticas e os padrões plantados não mudam.
+CENTROS_ZONA = {
+    "Centro":     (-23.548, -46.638, 0.012, 0.012),
+    "Zona Oeste": (-23.570, -46.715, 0.020, 0.022),
+    "Zona Sul":   (-23.640, -46.680, 0.030, 0.025),
+    "Zona Norte": (-23.480, -46.630, 0.022, 0.030),
+    "Zona Leste": (-23.550, -46.480, 0.028, 0.045),
+}
+rng_geo = np.random.default_rng(2026)
+lat_c, lon_c, dlat, dlon = (df["regiao"].map(lambda r, i=i: CENTROS_ZONA[r][i]).to_numpy() for i in range(4))
+df["latitude"] = np.round(rng_geo.normal(lat_c, dlat), 5)
+df["longitude"] = np.round(rng_geo.normal(lon_c, dlon), 5)
 nome = "entregas_controle.csv" if CONTROLE else "entregas_ficticias.csv"
 saida = Path(__file__).parent / "data" / nome
 saida.parent.mkdir(exist_ok=True)

@@ -60,6 +60,8 @@ Um gestor de operações sobe a base de entregas, e o app mostra **onde os atras
 | tempo_real_min | inteiro | |
 | atraso_min | inteiro | max(0, real − prometido) |
 | atrasou | texto | Sim / Não |
+| latitude | float | Fictícia, sorteada dentro da zona (gerador separado, seed 2026) |
+| longitude | float | Idem; usadas só no mapa, não entram no resumo da IA |
 
 ### 5.2 Padrões plantados (a "resposta certa" para a validação)
 

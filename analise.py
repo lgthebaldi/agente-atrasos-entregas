@@ -160,3 +160,45 @@ def resumo_para_ia(d: pd.DataFrame) -> dict:
             "por_regiao": tempos_medios(d, "regiao").to_dict(orient="records"),
         },
     }
+
+
+# ---------- mapa ----------
+TAMANHO_CELULA_KM = 1.5
+MIN_PEDIDOS_CELULA = 8   # células com menos pedidos não são pintadas (amostra pequena engana)
+
+
+def grade_atraso(d: pd.DataFrame, tamanho_km: float = TAMANHO_CELULA_KM,
+                 minimo: int = MIN_PEDIDOS_CELULA) -> pd.DataFrame:
+    """
+    Agrupa os pedidos numa grade de quadrados (~tamanho_km de lado) e calcula a taxa de
+    atraso de cada quadrado. Devolve só os quadrados com pelo menos `minimo` pedidos,
+    com os 4 cantos prontos para desenhar no mapa.
+    """
+    passo_lat = tamanho_km / 111.0
+    passo_lon = tamanho_km / (111.0 * 0.917)  # cos(23,5°) ~ 0,917 em São Paulo
+    g = d.assign(
+        i=(d["latitude"] // passo_lat).astype(int),
+        j=(d["longitude"] // passo_lon).astype(int),
+    ).groupby(["i", "j"]).agg(pedidos=("pedido_id", "size"), atrasados=("atrasou_bool", "sum"),
+                              regiao=("regiao", lambda s: s.mode().iat[0])).reset_index()
+    g = g[g["pedidos"] >= minimo].copy()
+    g["taxa_atraso_pct"] = (g["atrasados"] / g["pedidos"] * 100).round(1)
+    lat0, lon0 = g["i"] * passo_lat, g["j"] * passo_lon
+    g["poligono"] = [
+        [[lo, la], [lo + passo_lon, la], [lo + passo_lon, la + passo_lat], [lo, la + passo_lat]]
+        for la, lo in zip(lat0, lon0)
+    ]
+    return g.drop(columns=["i", "j"]).reset_index(drop=True)
+
+
+TAMANHOS_KM = (1.5, 2.0, 2.5, 3.0, 4.0, 5.0)
+
+
+def grade_adaptativa(d: pd.DataFrame, cobertura_minima: float = 0.7) -> tuple[pd.DataFrame, float]:
+    """Menor quadrado que ainda mostra pelo menos 70% dos pedidos (poucos dados -> quadrados maiores)."""
+    g, t = pd.DataFrame(), TAMANHOS_KM[-1]
+    for t in TAMANHOS_KM:
+        g = grade_atraso(d, t)
+        if len(d) and g["pedidos"].sum() / len(d) >= cobertura_minima:
+            break
+    return g, t
