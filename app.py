@@ -24,8 +24,15 @@ st.set_page_config(page_title="Agente de Atrasos em Entregas", page_icon="🛵",
 
 # ---------- dados ----------
 @st.cache_data(show_spinner=False)
-def carregar_exemplo() -> pd.DataFrame:
+def _ler_exemplo(assinatura: tuple) -> pd.DataFrame:
+    # `assinatura` (tamanho, data do arquivo) entra na chave do cache: se o CSV mudar,
+    # o cache se renova, mesmo que o servidor não reinicie.
     return pd.read_csv(BASE_EXEMPLO)
+
+
+def carregar_exemplo() -> pd.DataFrame:
+    info = BASE_EXEMPLO.stat()
+    return _ler_exemplo((info.st_size, info.st_mtime_ns))
 
 
 def ler_upload(arquivo) -> pd.DataFrame | None:
