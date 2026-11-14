@@ -8,11 +8,22 @@ para que o agente consiga descobri-los e explicá-los:
   3. Dois restaurantes têm tempo de preparo alto e instável (gargalo na cozinha).
   4. Entregas de bicicleta acima de 4 km atrasam bem mais que de moto.
   5. Sexta e sábado à noite têm fila maior de pedidos.
+
+Uso:
+  python gerar_dados.py              -> data/entregas_ficticias.csv (com os padrões)
+  python gerar_dados.py --controle   -> data/entregas_controle.csv  (SEM os padrões;
+                                        serve para testar se a IA inventa padrões)
 """
+import argparse
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
+
+ap = argparse.ArgumentParser()
+ap.add_argument("--controle", action="store_true", help="gera a base sem padrões plantados")
+CONTROLE = ap.parse_args().controle
+PADROES = not CONTROLE
 
 rng = np.random.default_rng(42)
 N = 5000
@@ -56,29 +67,29 @@ for i in range(N):
 
     # preparo
     preparo = rng.normal(14, 3)
-    if rest in gargalos:
+    if PADROES and rest in gargalos:
         preparo = rng.normal(24, 8)
     if pico:
         preparo += 3
     preparo = max(5, preparo)
 
     # espera por entregador
-    espera = rng.exponential(3) / regioes[regiao]["oferta"]
-    if chuva:
+    espera = rng.exponential(3) / (regioes[regiao]["oferta"] if PADROES else 1.0)
+    if PADROES and chuva:
         espera += rng.exponential(5)
-    if fim_semana_noite:
+    if PADROES and fim_semana_noite:
         espera += rng.exponential(4)
 
     # deslocamento
     vel = 22 if modal == "Moto" else 13
-    if chuva:
+    if PADROES and chuva:
         vel *= 0.75
     desloc = dist / vel * 60
-    if modal == "Bicicleta" and dist > 4:
+    if PADROES and modal == "Bicicleta" and dist > 4:
         desloc *= 1.35
 
     real = preparo + espera + desloc + rng.normal(0, 2)
-    if chuva and pico:
+    if PADROES and chuva and pico:
         real += rng.normal(8, 3)
 
     prometido = 15 + dist * 3.5 + (5 if pico else 0)
@@ -106,7 +117,8 @@ for i in range(N):
     })
 
 df = pd.DataFrame(linhas).sort_values(["data", "hora_pedido"]).reset_index(drop=True)
-saida = Path(__file__).parent / "data" / "entregas_ficticias.csv"
+nome = "entregas_controle.csv" if CONTROLE else "entregas_ficticias.csv"
+saida = Path(__file__).parent / "data" / nome
 saida.parent.mkdir(exist_ok=True)
 df.to_csv(saida, index=False, encoding="utf-8")
 print(f"{len(df)} pedidos gerados -> {saida}")

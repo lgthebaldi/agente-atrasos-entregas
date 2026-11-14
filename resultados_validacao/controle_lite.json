@@ -1,0 +1,90 @@
+{
+  "base": "data/entregas_controle.csv",
+  "controle": true,
+  "resultados": [
+    {
+      "execucao": 1,
+      "modelo": "gemini-3.5-flash-lite",
+      "nivel": "minimal",
+      "segundos": 1.9,
+      "encontrados": {
+        "Chuva no pico do jantar": false,
+        "Bicicleta acima de 4 km": true,
+        "Restaurantes com gargalo": false,
+        "Zona Leste": false
+      },
+      "extras": [],
+      "numeros_suspeitos": [],
+      "n_padroes": 1,
+      "diagnostico": {
+        "resumo": "Identificamos que entregas de bicicleta acima de 4 km concentram a grande maioria dos atrasos da plataforma. As demais variáveis não apresentam desvios críticos relevantes acima de 8 pontos percentuais da média geral.",
+        "padroes": [
+          {
+            "padrao": "Bicicleta em rotas longas",
+            "evidencia": "Taxa de 23.3% contra uma referência geral de 5.3%, com n = 550 pedidos.",
+            "causa_provavel": "O modal de bicicleta perde eficiência e velocidade em distâncias superiores a 4 quilômetros.",
+            "acao_sugerida": "Limitar o raio de entrega para bicicletas a 4 km ou direcionar estas rotas exclusivamente para motos.",
+            "metrica_para_acompanhar": "Taxa de atraso em pedidos de bicicleta acima de 4 km"
+          }
+        ],
+        "limitacoes": "Os dados não permitem avaliar o impacto de fatores externos como trânsito detalhado por via, cancelamentos de entregadores ou problemas específicos de infraestrutura dos restaurantes."
+      }
+    },
+    {
+      "execucao": 2,
+      "modelo": "gemini-3.5-flash-lite",
+      "nivel": "minimal",
+      "segundos": 2.3,
+      "encontrados": {
+        "Chuva no pico do jantar": false,
+        "Bicicleta acima de 4 km": true,
+        "Restaurantes com gargalo": false,
+        "Zona Leste": false
+      },
+      "extras": [],
+      "numeros_suspeitos": [],
+      "n_padroes": 1,
+      "diagnostico": {
+        "resumo": "Identificamos que entregas de bicicleta acima de 4 km são o principal motor de atrasos na plataforma. Demais segmentos analisados não apresentam desvios críticos relevantes em relação à média geral.",
+        "padroes": [
+          {
+            "padrao": "Bicicleta em rotas longas",
+            "evidencia": "Taxa de 23.3% para o segmento de bicicleta acima de 4 km, com n = 550, comparado à referência geral de 5.3%.",
+            "causa_provavel": "O esforço físico e a velocidade limitada da bicicleta comprometem o cumprimento de prazos em distâncias superiores a 4 km.",
+            "acao_sugerida": "Limitar o raio de entrega de entregadores de bicicleta para até 4 km ou priorizar motos para rotas mais longas.",
+            "metrica_para_acompanhar": "Taxa de atraso em pedidos de bicicleta com distância superior a 4 km"
+          }
+        ],
+        "limitacoes": "Os dados fornecidos são agregados e não permitem cruzar simultaneamente todos os fatores (como modal, chuva e horário em uma única matriz detalhada), nem avaliar o desempenho individual de cada entregador."
+      }
+    },
+    {
+      "execucao": 3,
+      "modelo": "gemini-3.5-flash-lite",
+      "nivel": "minimal",
+      "segundos": 2.0,
+      "encontrados": {
+        "Chuva no pico do jantar": false,
+        "Bicicleta acima de 4 km": true,
+        "Restaurantes com gargalo": false,
+        "Zona Leste": false
+      },
+      "extras": [],
+      "numeros_suspeitos": [],
+      "n_padroes": 1,
+      "diagnostico": {
+        "resumo": "Identificamos que entregas de bicicleta acima de 4 km concentram o maior impacto de atrasos na plataforma. Demais segmentos analisados não apresentam desvios críticos relevantes.",
+        "padroes": [
+          {
+            "padrao": "Bicicleta em longas distâncias",
+            "evidencia": "Taxa do segmento de 23.3% contra referência geral de 5.3%, com n = 550 pedidos.",
+            "causa_provavel": "O raio de entrega superior a 4 km excede a capacidade física do entregador de bicicleta, gerando atrasos expressivos.",
+            "acao_sugerida": "Limitar o raio de atendimento de entregadores de bicicleta para até 4 km no aplicativo.",
+            "metrica_para_acompanhar": "Taxa de atraso em pedidos de bicicleta"
+          }
+        ],
+        "limitacoes": "Os dados fornecidos são agregados e não permitem cruzar simultaneamente modal, distância, clima e horário em uma análise multivariada detalhada, nem avaliar o impacto de trânsito em tempo real."
+      }
+    }
+  ]
+}

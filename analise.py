@@ -106,9 +106,15 @@ def tempos_medios(d: pd.DataFrame, coluna: str) -> pd.DataFrame:
     return t.sort_values("preparo_medio_min", ascending=False).reset_index()
 
 
-def _linhas(t: pd.DataFrame, chave: str) -> list[dict]:
+def _linhas(t: pd.DataFrame, chave: str, taxa_geral: float) -> list[dict]:
+    """
+    Linhas do resumo. 'excesso_atrasados' = atrasos acima do esperado se o segmento
+    tivesse a taxa geral: mede o impacto (taxa x volume) já calculado pelo pandas.
+    """
     return [
-        {"segmento": str(r[chave]), "n": int(r["pedidos"]), "taxa_atraso_pct": float(r["taxa_atraso_pct"])}
+        {"segmento": str(r[chave]), "n": int(r["pedidos"]), "atrasados": int(r["atrasados"]),
+         "taxa_atraso_pct": float(r["taxa_atraso_pct"]),
+         "excesso_atrasados": int(round(r["atrasados"] - r["pedidos"] * taxa_geral))}
         for _, r in t.iterrows()
     ]
 
@@ -119,10 +125,17 @@ def resumo_para_ia(d: pd.DataFrame) -> dict:
     Só agregados, sempre com o tamanho da amostra (n) de cada segmento.
     """
     k = kpis(d)
+    tg = float(d["atrasou_bool"].mean())
+
+    def L(t, chave):
+        return _linhas(t, chave, tg)
+
     return {
         "observacao": (
             f"Estatísticas já calculadas. Taxa = % de pedidos atrasados. "
-            f"n = número de pedidos do segmento. Segmentos com n < {N_MINIMO} não sustentam conclusão."
+            "n = número de pedidos do segmento. 'excesso_atrasados' = atrasos a mais do que o "
+            "esperado se o segmento tivesse a taxa geral (mede o impacto: taxa x volume). "
+            f"Segmentos com n < {N_MINIMO} não sustentam conclusão."
         ),
         "geral": {
             "pedidos": k["pedidos"],
@@ -130,17 +143,17 @@ def resumo_para_ia(d: pd.DataFrame) -> dict:
             "atraso_medio_min_entre_atrasados": k["atraso_medio_min"],
         },
         "por_segmento": {
-            "regiao": _linhas(taxa_por(d, "regiao"), "regiao"),
-            "hora_pedido": _linhas(taxa_por(d, "hora_pedido"), "hora_pedido"),
-            "modal": _linhas(taxa_por(d, "modal"), "modal"),
-            "chuva": _linhas(taxa_por(d, "chuva"), "chuva"),
-            "dia_semana": _linhas(taxa_por(d, "dia_semana"), "dia_semana"),
-            "restaurante": _linhas(taxa_por(d, "restaurante"), "restaurante"),
+            "regiao": L(taxa_por(d, "regiao"), "regiao"),
+            "hora_pedido": L(taxa_por(d, "hora_pedido"), "hora_pedido"),
+            "modal": L(taxa_por(d, "modal"), "modal"),
+            "chuva": L(taxa_por(d, "chuva"), "chuva"),
+            "dia_semana": L(taxa_por(d, "dia_semana"), "dia_semana"),
+            "restaurante": L(taxa_por(d, "restaurante"), "restaurante"),
         },
         "combinacoes": {
-            "chuva_x_pico_jantar": _linhas(chuva_x_pico(d), "segmento"),
-            "modal_x_distancia": _linhas(modal_x_distancia(d), "segmento"),
-            "noites_sexta_sabado_vs_outras": _linhas(fim_de_semana_noite(d), "segmento"),
+            "chuva_x_pico_jantar": L(chuva_x_pico(d), "segmento"),
+            "modal_x_distancia": L(modal_x_distancia(d), "segmento"),
+            "noites_sexta_sabado_vs_outras": L(fim_de_semana_noite(d), "segmento"),
         },
         "tempos_medios": {
             "por_restaurante": tempos_medios(d, "restaurante").to_dict(orient="records"),

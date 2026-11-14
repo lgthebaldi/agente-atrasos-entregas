@@ -2,15 +2,19 @@
 Interface Streamlit do Agente de Análise de Atrasos.
 Rodar localmente:  streamlit run app.py
 """
+import json
 from pathlib import Path
 
 import altair as alt
 import pandas as pd
 import streamlit as st
 
+import agente
 import analise
 
 BASE_EXEMPLO = Path(__file__).parent / "data" / "entregas_ficticias.csv"
+DIAGNOSTICO_SALVO = Path(__file__).parent / "data" / "diagnostico_exemplo.json"
+ORIGEM_EXEMPLO = "Base de exemplo (fictícia)"
 COR_BARRA = "#2a78d6"     # azul (série única)
 COR_REFERENCIA = "#898781"  # cinza neutro para a linha da média
 
@@ -41,6 +45,29 @@ def ler_upload(arquivo) -> pd.DataFrame | None:
         st.error("O arquivo está vazio.")
         return None
     return df
+
+
+# ---------- IA ----------
+@st.cache_data(ttl=6 * 3600, show_spinner=False)
+def diagnostico_em_cache(resumo_json: str, modelos: tuple[str, ...]) -> dict:
+    """
+    O mesmo resumo gera o mesmo pedido à IA; o resultado é reaproveitado por todos
+    os visitantes por 6 h. Erros não ficam em cache. Isso poupa a cota gratuita do Gemini.
+    """
+    return agente.gerar_diagnostico(json.loads(resumo_json), modelos=list(modelos))
+
+
+def obter_diagnostico(resumo: dict, eh_exemplo: bool) -> dict:
+    resumo_json = json.dumps(resumo, ensure_ascii=False, sort_keys=True)
+    if eh_exemplo:
+        # Base de exemplo: só o modelo principal; se falhar, mostra a execução validada salva.
+        try:
+            return diagnostico_em_cache(resumo_json, (agente.modelos_a_tentar()[0],))
+        except agente.ErroDiagnostico:
+            salvo = json.loads(DIAGNOSTICO_SALVO.read_text(encoding="utf-8"))
+            return {**salvo, "salvo": True}
+    # Base enviada pelo usuário: principal + modelos reserva.
+    return diagnostico_em_cache(resumo_json, tuple(agente.modelos_a_tentar()))
 
 
 # ---------- gráficos ----------
@@ -101,7 +128,7 @@ def tela_inicio():
         st.write("Base fictícia com 5.000 pedidos de 3 meses.")
         if st.button("Usar base de exemplo", type="primary", width="stretch"):
             st.session_state.df = carregar_exemplo()
-            st.session_state.origem = "Base de exemplo (fictícia)"
+            st.session_state.origem = ORIGEM_EXEMPLO
             st.rerun()
     with col2:
         st.subheader("Usar seus dados")
@@ -160,7 +187,51 @@ def tela_onde_esta(d: pd.DataFrame):
 
 
 def tela_diagnostico(d: pd.DataFrame):
-    st.info("🚧 O diagnóstico da IA chega no próximo passo.")
+    st.write(
+        "A IA recebe **só as estatísticas já calculadas** (as mesmas dos gráficos) e escreve "
+        "os padrões que mais explicam os atrasos, com a causa provável e o que fazer."
+    )
+    resumo = analise.resumo_para_ia(d)
+    eh_exemplo = st.session_state.get("origem") == ORIGEM_EXEMPLO
+    if st.button("Gerar diagnóstico", type="primary", disabled="diagnostico" in st.session_state):
+        with st.spinner("A IA está analisando as estatísticas… (leva cerca de 15 segundos)"):
+            try:
+                st.session_state.diagnostico = obter_diagnostico(resumo, eh_exemplo)
+            except agente.ErroDiagnostico as e:
+                st.session_state.pop("diagnostico", None)
+                st.error(str(e))
+                return
+
+    r = st.session_state.get("diagnostico")
+    if not r:
+        return
+    dg = r["diagnostico"]
+    if r.get("salvo"):
+        st.info(
+            "A cota gratuita da IA acabou por hoje, então este é um diagnóstico **real salvo** de uma "
+            "execução anterior sobre esta mesma base (validado: encontrou os 4 padrões plantados).",
+            icon="💾",
+        )
+    st.warning("Diagnóstico gerado por IA a partir das estatísticas acima; confirme antes de agir.", icon="⚠️")
+    st.subheader("Resumo")
+    st.write(dg["resumo"])
+
+    if not dg["padroes"]:
+        st.success("A IA não encontrou nenhum padrão claro de atraso nesta base.")
+    for i, p in enumerate(dg["padroes"], start=1):
+        with st.container(border=True):
+            st.markdown(f"#### {i}. {p['padrao']}")
+            st.markdown(f"**📊 Evidência:** {p['evidencia']}")
+            c1, c2 = st.columns(2)
+            c1.markdown(f"**🔎 Causa provável**\n\n{p['causa_provavel']}")
+            c2.markdown(f"**✅ Ação sugerida**\n\n{p['acao_sugerida']}")
+            st.markdown(f"**📈 Métrica para acompanhar:** {p['metrica_para_acompanhar']}")
+
+    st.markdown(f"**Limitações:** {dg['limitacoes']}")
+    st.caption(f"Gerado por {r['modelo']} em {r['segundos']:.1f} s".replace(".", ","))
+    with st.expander("Ver exatamente o que foi enviado para a IA"):
+        st.caption("Só números agregados, nenhuma linha de pedido. Cada segmento traz o número de pedidos (n).")
+        st.json(resumo, expanded=False)
 
 
 # ---------- app ----------

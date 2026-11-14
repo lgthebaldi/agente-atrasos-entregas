@@ -1,0 +1,40 @@
+{
+  "origem": "Execução real salva durante a validação (14/11/2026); encontrou os 4 padrões plantados e nenhum número fora do resumo.",
+  "modelo": "gemini-3.6-flash",
+  "nivel_raciocinio": "minimal",
+  "segundos": 18.7,
+  "diagnostico": {
+    "resumo": "Analisamos 5.000 pedidos e identificamos que o atraso geral é de 28.2%, concentrado principalmente em entregas de bicicleta em longas distâncias, episódios de chuva nos horários de pico e gargalos específicos de preparo em determinados restaurantes. Medidas focadas na reconfiguração de raio de entrega para ciclistas e contingência para dias de chuva podem reduzir drasticamente estes gargalos.",
+    "padroes": [
+      {
+        "padrao": "Entregas por bicicleta em distâncias longas (acima de 4 km)",
+        "evidencia": "Taxa de atraso de 91.4% contra a média geral de 28.2% (n = 561 pedidos; excesso de 355 atrasados).",
+        "causa_provavel": "Incompatibilidade física e operacional do modal cicloviário para percorrer distâncias superiores a 4 km no tempo estimado.",
+        "acao_sugerida": "Limitar o raio máximo de alocação de pedidos para entregadores de bicicleta em no máximo 4 km no aplicativo.",
+        "metrica_para_acompanhar": "Taxa de atraso de pedidos por bicicleta acima de 4 km"
+      },
+      {
+        "padrao": "Chuva combinada com horário de pico do jantar (19h–21h)",
+        "evidencia": "Taxa de atraso de 81.2% contra a média geral de 28.2% (n = 341 pedidos; excesso de 181 atrasados).",
+        "causa_provavel": "Aumento do trânsito, redução na velocidade dos entregadores e falta de frota disponível durante episódios de chuva no pico.",
+        "acao_sugerida": "Ativar tarifa dinâmica de contingência em dias de chuva para atrair mais entregadores e expandir temporariamente a estimativa de tempo de entrega apresentada ao cliente.",
+        "metrica_para_acompanhar": "Taxa de atraso em horários de pico com chuva"
+      },
+      {
+        "padrao": "Gargalo de preparo na Churrascaria Fogo Bravo e Pizzaria Bella Massa",
+        "evidencia": "Churrascaria Fogo Bravo com 60.0% de atraso (n = 420; excesso de 133) e Pizzaria Bella Massa com 59.9% (n = 409; excesso de 130), contra a taxa geral de 28.2%. Ambos têm tempo de preparo médio de ~25 min (vs. ~15 min dos demais).",
+        "causa_provavel": "Tempo elevado de preparo dos pratos na cozinha desses restaurantes em comparação com a estimativa padrão da plataforma.",
+        "acao_sugerida": "Ajustar o tempo padrão de preparo cadastrado para esses dois estabelecimentos e alinhar com os gestores dos restaurantes a otimização do fluxo de despacho.",
+        "metrica_para_acompanhar": "Tempo médio de preparo e taxa de atraso da Churrascaria Fogo Bravo e Pizzaria Bella Massa"
+      },
+      {
+        "padrao": "Entregas destinadas à Zona Leste",
+        "evidencia": "Taxa de atraso de 36.3% contra a média geral de 28.2% (n = 903 pedidos; excesso de 73 atrasados). Espera média de 6.2 min e distância média de 5.8 km.",
+        "causa_provavel": "Distância média percorrida mais alta (5.8 km vs 2.5 km a 4.2 km de outras regiões) aliada a maior tempo de espera por entregadores.",
+        "acao_sugerida": "Recrutar mais parceiros entregadores posicionados na Zona Leste ou reajustar o tempo estimado de deslocamento para essa região.",
+        "metrica_para_acompanhar": "Tempo médio de espera e taxa de atraso na Zona Leste"
+      }
+    ],
+    "limitacoes": "Os dados apresentados são estatísticas agregadas e não permitem avaliar o impacto individual do comportamento dos clientes, potenciais falhas de sinal de GPS, tempo de retenção do entregador na portaria do destino nem cruzamentos diretos entre restaurantes específicos e modais utilizados."
+  }
+}

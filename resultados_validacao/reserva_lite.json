@@ -1,0 +1,180 @@
+{
+  "base": "/home/user/agente-atrasos-entregas/data/entregas_ficticias.csv",
+  "controle": false,
+  "resultados": [
+    {
+      "execucao": 1,
+      "modelo": "gemini-3.5-flash-lite",
+      "nivel": "minimal",
+      "segundos": 3.9,
+      "encontrados": {
+        "Chuva no pico do jantar": true,
+        "Bicicleta acima de 4 km": true,
+        "Restaurantes com gargalo": true,
+        "Zona Leste": false
+      },
+      "extras": [
+        "Chuva isolada"
+      ],
+      "numeros_suspeitos": [],
+      "n_padroes": 5,
+      "diagnostico": {
+        "resumo": "Os atrasos da plataforma concentram-se fortemente em entregas feitas de bicicleta em longas distancias e em combinacoes de chuva com horario de pico. Acoes focadas nesses dois fatores trazem o maior potencial de reducao de atrasos.",
+        "padroes": [
+          {
+            "padrao": "Bicicleta em longas distancias",
+            "evidencia": "Taxa do segmento de 91.4% vs. referencia geral de 28.2%, com n = 561 e excesso de 355 atrasados.",
+            "causa_provavel": "O modal de bicicleta apresenta limitacao fisica e de velocidade para rotas superiores a 4 km.",
+            "acao_sugerida": "Restringir o raio maximo de atendimento para entregas de bicicleta ate 4 km e direcionar rotas longas exclusivamente para motos.",
+            "metrica_para_acompanhar": "Taxa de atraso em entregas de bicicleta acima de 4 km"
+          },
+          {
+            "padrao": "Chuva no horario de pico do jantar",
+            "evidencia": "Taxa do segmento de 81.2% vs. referencia geral de 28.2%, com n = 341 e excesso de 181 atrasados.",
+            "causa_provavel": "Aumento drastico na demanda combinado com a queda de velocidade dos entregadores devido ao clima adverso.",
+            "acao_sugerida": "Ativar incentivos financeiros dinâmicos (tarifa extra) para atrair mais entregadores de moto e ajustar o tempo estimado de entrega (+15 minutos) em dias chuvosos durante o pico.",
+            "metrica_para_acompanhar": "Taxa de atraso no jantar em dias de chuva"
+          },
+          {
+            "padrao": "Chuva isolada",
+            "evidencia": "Taxa do segmento de 60.9% vs. referencia geral de 28.2%, com n = 882 e excesso de 288 atrasados.",
+            "causa_provavel": "Condicoes climaticas adversas reduzem a velocidade geral da frota em qualquer horario.",
+            "acao_sugerida": "Criar um protocolo automatico de dilatacao do tempo de entrega no aplicativo sempre que houver confirmacao de chuva.",
+            "metrica_para_acompanhar": "Taxa de atraso em dias chuvosos"
+          },
+          {
+            "padrao": "Modal bicicleta geral",
+            "evidencia": "Taxa do segmento de 61.0% vs. referencia geral de 28.2%, com n = 1232 e excesso de 404 atrasados.",
+            "causa_provavel": "Incompatibilidade da bicicleta com distancias maiores e topografia da regiao.",
+            "acao_sugerida": "Reavaliar a frota ativa de bicicletas e migrar parte dos cadastros para motocicletas.",
+            "metrica_para_acompanhar": "Taxa geral de atrasos do modal bicicleta"
+          },
+          {
+            "padrao": "Restaurantes com preparo lento",
+            "evidencia": "Churrascaria Fogo Bravo com taxa de 60.0% e Pizzaria Bella Massa com 59.9% vs. referencia de 28.2%, com n de 420 e 409 respectivamente, gerando excesso de 133 e 130 atrasados.",
+            "causa_provavel": "Tempo medio de preparo elevado (proximo a 25 minutos) com alta variabilidade.",
+            "acao_sugerida": "Reajustar o tempo de preparo estimado para esses dois estabelecimentos no sistema e realizar reuniao de alinhamento operacional.",
+            "metrica_para_acompanhar": "Tempo medio de preparo e taxa de atraso da Churrascaria Fogo Bravo e Pizzaria Bella Massa"
+          }
+        ],
+        "limitacoes": "Os dados nao permitem avaliar o impacto do transito detalhado por rua, o comportamento individual dos entregadores ou fatores externos imprevistos como pane no aplicativo, pois tais variaveis nao foram coletadas na base."
+      }
+    },
+    {
+      "execucao": 2,
+      "modelo": "gemini-3.5-flash-lite",
+      "nivel": "minimal",
+      "segundos": 3.6,
+      "encontrados": {
+        "Chuva no pico do jantar": true,
+        "Bicicleta acima de 4 km": true,
+        "Restaurantes com gargalo": true,
+        "Zona Leste": false
+      },
+      "extras": [
+        "Operacao com chuva"
+      ],
+      "numeros_suspeitos": [],
+      "n_padroes": 5,
+      "diagnostico": {
+        "resumo": "Os atrasos da plataforma concentram-se fortemente em entregas feitas de bicicleta para longas distancias e em combinacoes de chuva com horario de pico. Acoes focadas em restringir rotas longas para bicicletas e ajustar a frota em dias chuvosos mitigam o principal impacto.",
+        "padroes": [
+          {
+            "padrao": "Bicicleta em rotas longas",
+            "evidencia": "Taxa do segmento de 91.4% vs taxa de referencia geral de 28.2%, com n = 561 pedidos e excesso de 355 atrasados.",
+            "causa_provavel": "Capacidade fisica limitada do entregador de bicicleta para cobrir distancias superiores a 4 km no tempo estimado.",
+            "acao_sugerida": "Limitar o raio de atendimento de entregadores de bicicleta para um maximo de 4 km.",
+            "metrica_para_acompanhar": "Taxa de atraso de entregas por bicicleta em rotas acima de 4 km"
+          },
+          {
+            "padrao": "Chuva no horario de pico do jantar",
+            "evidencia": "Taxa do segmento de 81.2% vs taxa de referencia geral de 28.2%, com n = 341 pedidos e excesso de 181 atrasados.",
+            "causa_provavel": "Sobrecarga de pedidos combinada com a reducao da velocidade de deslocamento devido a chuva forte.",
+            "acao_sugerida": "Incentivar a operacao de motociclistas com bonus dinamicos e ampliar o tempo estimado de entrega em dias chuvosos.",
+            "metrica_para_acompanhar": "Taxa de atraso durante periodos de chuva no jantar"
+          },
+          {
+            "padrao": "Uso de bicicleta em geral",
+            "evidencia": "Taxa do segmento de 61.0% vs taxa de referencia geral de 28.2%, com n = 1232 pedidos e excesso de 404 atrasados.",
+            "causa_provavel": "Velocidade media inferior da bicicleta comparada a moto, afetando prazos mesmo em medias distancias.",
+            "acao_sugerida": "Migrar pedidos de media distancia atualmente alocados para bicicletas para a frota de motocicletas.",
+            "metrica_para_acompanhar": "Taxa geral de atraso do modal bicicleta"
+          },
+          {
+            "padrao": "Operacao com chuva",
+            "evidencia": "Taxa do segmento de 60.9% vs taxa de referencia geral de 28.2%, com n = 882 pedidos e excesso de 288 atrasados.",
+            "causa_provavel": "Condicoes climaticas adversas que reduzem a mobilidade urbana e aumentam o tempo de transito.",
+            "acao_sugerida": "Adicionar automaticamente 10 minutos nas estimativas de entrega assim que o alerta de chuva for ativado.",
+            "metrica_para_acompanhar": "Indice de pontualidade em dias chuvosos"
+          },
+          {
+            "padrao": "Restaurantes com maior tempo de preparo",
+            "evidencia": "Taxa do segmento de 60.0% (Churrascaria Fogo Bravo) e 59.9% (Pizzaria Bella Massa) vs taxa de referencia geral de 28.2%, com n = 420 e 409 pedidos, respectivamente.",
+            "causa_provavel": "Tempo de preparo elevado e desvio padrao alto (acima de 8 minutos), gerando espera prolongada na retirada.",
+            "acao_sugerida": "Revisar o tempo padrao de preparo cadastrado para esses dois estabelecimentos junto aos gerentes.",
+            "metrica_para_acompanhar": "Tempo medio de espera do entregador no estabelecimento"
+          }
+        ],
+        "limitacoes": "Os dados mostram correlacoes fortes entre atrasos, clima e modais, mas nao permitem avaliar o impacto de transito especifico por via, satisfacao do cliente final ou problemas operacionais internos de cada restaurante."
+      }
+    },
+    {
+      "execucao": 3,
+      "modelo": "gemini-3.5-flash-lite",
+      "nivel": "minimal",
+      "segundos": 4.3,
+      "encontrados": {
+        "Chuva no pico do jantar": true,
+        "Bicicleta acima de 4 km": true,
+        "Restaurantes com gargalo": true,
+        "Zona Leste": false
+      },
+      "extras": [
+        "Entregas em dias de chuva"
+      ],
+      "numeros_suspeitos": [],
+      "n_padroes": 5,
+      "diagnostico": {
+        "resumo": "Os atrasos da plataforma concentram-se fortemente em entregas feitas de bicicleta para longas distancias e em pedidos realizados sob chuva combinada com o horario de pico. Ajudar esses modais e restringir raios criticos reduzira drasticamente a taxa de atraso geral.",
+        "padroes": [
+          {
+            "padrao": "Bicicleta em longas distancias",
+            "evidencia": "Taxa do segmento de 91.4% com n = 561, contra uma taxa de referencia geral de 28.2%",
+            "causa_provavel": "O modal de bicicleta possui limite de velocidade e raio de atracao inadequado para rotas superiores a 4 km.",
+            "acao_sugerida": "Limitar o raio de entrega de ciclistas para um maximo de 4 km e direcionar rotas longas exclusivamente para motociclistas.",
+            "metrica_para_acompanhar": "Taxa de atraso em pedidos de bicicleta acima de 4 km"
+          },
+          {
+            "padrao": "Chuva combinada com pico do jantar",
+            "evidencia": "Taxa do segmento de 81.2% com n = 341, contra uma taxa de referencia geral de 28.2%",
+            "causa_provavel": "Aumento repentino de demanda associado a lentidao no transito e menor disponibilidade de entregadores em dias chuvosos.",
+            "acao_sugerida": "Acionar incentivos financeiros para entrega em dias de chuva e ampliar o tempo estimado de entrega automaticamente na plataforma.",
+            "metrica_para_acompanhar": "Taxa de atraso no horario das 19h as 21h em dias chuvosos"
+          },
+          {
+            "padrao": "Uso de bicicleta em geral",
+            "evidencia": "Taxa do segmento de 61.0% com n = 1232, contra uma taxa de referencia geral de 28.2%",
+            "causa_provavel": "Inflexibilidade do modal para cobrir entregas com o padrao de tempo esperado pela plataforma.",
+            "acao_sugerida": "Revisar a frota de bicicletas e converter parte dos entregadores para motos em zonas de maior distancia.",
+            "metrica_para_acompanhar": "Participacao do modal bicicleta no volume total de atrasos"
+          },
+          {
+            "padrao": "Entregas em dias de chuva",
+            "evidencia": "Taxa do segmento de 60.9% com n = 882, contra uma taxa de referencia geral de 28.2%",
+            "causa_provavel": "Dificuldade de locomocao geral da frota e impacto climatico na operacao.",
+            "acao_sugerida": "Criar um protocolo automatico de contingencia climatica com ajuste de raio e tempo de preparo dos restaurantes.",
+            "metrica_para_acompanhar": "Taxa de atraso em dias com ocorrencia de chuva"
+          },
+          {
+            "padrao": "Restaurantes com maior tempo de preparo",
+            "evidencia": "Churrascaria Fogo Bravo com taxa de 60.0% (n = 420) e Pizzaria Bella Massa com 59.9% (n = 409), contra a referencia de 28.2%",
+            "causa_provavel": "Tempo medio de preparo superior a 24 minutos, o que comprime a margem de erro para a entrega.",
+            "acao_sugerida": "Reunir com os gestores da Churrascaria Fogo Bravo e da Pizzaria Bella Massa para otimizar processos internos de cozinha e ajustar o tempo estimado de preparo no aplicativo.",
+            "metrica_para_acompanhar": "Tempo medio de preparo e taxa de atraso especifica desses dois estabelecimentos"
+          }
+        ],
+        "limitacoes": "Os dados mostram correlacoes fortes entre atrasos, modal, clima e restaurantes especificos, mas nao permitem avaliar o impacto exato do comportamento individual dos entregadores ou fatores externos nao catalogados, como obras nas vias publicas."
+      }
+    }
+  ]
+}
