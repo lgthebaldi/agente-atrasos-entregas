@@ -1,5 +1,6 @@
-streamlit>=1.67,<2
-pandas>=3.1,<4
-numpy>=2.5,<3
-google-genai>=3.3,<4
-python-dotenv>=1.2,<2
+# Faixas compatíveis com Python 3.10 a 3.13 (o pip escolhe a melhor versão para o seu Python)
+streamlit>=1.50,<2
+pandas>=2.2,<4
+numpy>=2.0,<3
+google-genai>=2.0,<4
+python-dotenv>=1.0,<2
