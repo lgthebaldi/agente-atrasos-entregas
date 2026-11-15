@@ -11,10 +11,17 @@
 
 ### Onde está
 - App no ar: https://agente-atrasos.streamlit.app · Repositório: https://github.com/lgthebaldi/agente-atrasos-entregas
-- `main` tem: análise com pandas, 4 abas (Visão geral, **Mapa** de São Paulo com filtros, Onde está o atraso, Diagnóstico da IA), agente com Gemini (`gemini-3.6-flash`, raciocínio `minimal`), `validacao.py`, README com GIF, LICENSE e `cover.png`.
+- `main` tem: análise com pandas, 4 abas (Visão geral, **Mapa** de São Paulo com filtros, Onde está o atraso, Diagnóstico da IA), agente com Gemini (`gemini-3.6-flash`, raciocínio `minimal`) e **Groq (`qwen/qwen3.8-27b`) como reserva**, `validacao.py`, README com GIF, LICENSE e `cover.png`.
 - **O Streamlit Cloud publica sozinho a cada push no `main`.** Mudança de código arriscada vai em branch e só entra no `main` depois de testada.
-- Branch `groq-reserva`: integração com o Groq (`qwen/qwen3.8-27b`). **Não está no `main`** (ver pendência 2). O histórico do `main` foi reescrito em 14/11 (commits passaram para o nome do Luis), então `groq-reserva` ainda aponta para a base antiga: **faça rebase sobre o `main` atual antes de mesclar** (nunca force push no `main`).
+- A `groq-reserva` foi rebaseada e mesclada no `main` em 15/11 (avanço direto, commit `7ede051`). A branch pode ser apagada. Faltou só um commit com nome "wip" no histórico (`324b454`).
+- O pandas agora marca `relevante` ("sim"/"não") em cada segmento do resumo (n ≥ 50 e ≥ 8 pontos acima da média). A IA só aponta padrões "sim". O limite de 8 pontos não foi alterado.
 - Commits saem no nome do Luis (git config local) e mantêm o Claude como coautor.
+
+### Validação medida em 15/11 (3 execuções cada, resultados em `resultados_validacao/`)
+- Gemini, base de exemplo: 4/4 em 3 de 3, sem números inventados. Base sem padrões: só 2 padrões de bicicleta.
+- Groq (qwen), base de exemplo: 4/4 em 3 de 3. Base sem padrões: só bicicleta, sem "Zona Leste" inventada.
+- Armadilha corrigida: o cliente do Gemini era fechado antes da chamada ("client has been closed"); agora fica numa variável.
+- Antes do prompt novo, o Gemini somou dois excessos (133 + 130 = 263) em 1 de 3 execuções.
 
 ### Chaves numa sessão de nuvem (leia antes de dizer "falta chave")
 - As chaves **não são variáveis de ambiente de verdade**. Ficam como *segredos de rede* do ambiente **"GEN IA iFood"** (`generativelanguage.googleapis.com` com o cabeçalho `x-goog-api-key` e `api.groq.com` com `Authorization: Bearer`). O proxy da sessão coloca a chave real na chamada.
@@ -25,13 +32,13 @@
 
 ### Cotas do plano gratuito (gaste com cuidado)
 - **Gemini:** cerca de 20 chamadas por dia **por modelo**. `gemini-3.5-flash` divide a cota com o `3.6`. Erro 429 "PerDay" não adianta esperar.
-- **Groq:** 1.000 chamadas por dia, mas só 8.000 tokens por minuto (cerca de 1 diagnóstico por minuto): deixe **70 s ou mais** entre execuções.
+- **Groq:** 1.000 chamadas por dia, mas só 8.000 tokens por minuto (cerca de 1 diagnóstico por minuto) e um limite de tokens de saída por minuto: deixe **70 s ou mais** entre execuções. Se der 429 de OTPM, espere e repita.
 - O app guarda o diagnóstico em cache por 6 h (chave: resumo + versão do prompt) e, se a cota acabar, mostra um diagnóstico real já validado (`data/diagnostico_exemplo.json`).
 
 ### Pendências, em ordem
-1. **Revalidar o Gemini com o prompt atual** (a última validação foi antes do ajuste de vírgula decimal e de "sem nomes técnicos"): `python validacao.py --execucoes 3 --modelo gemini-3.6-flash --pausa 30` e **o teste negativo no modelo principal** (`python gerar_dados.py --controle`, depois `python validacao.py --base data/entregas_controle.csv --controle --execucoes 3`). Hoje o negativo só foi feito no modelo reserva `lite`. Atualizar a tabela de resultados do README.
-2. **Groq:** o `qwen` acha os 4 padrões (4/4), mas **inventa padrões fracos** na base sem padrões (ex.: "Zona Leste" com 1,4 ponto acima da média). Antes de entrar no `main`: o **pandas** deve marcar no resumo quais segmentos são relevantes (≥ 8 pontos acima da média e n ≥ 50), em vez de deixar a IA decidir; depois revalidar positivo e negativo. Só então mesclar `groq-reserva`.
-3. (Opcional) Aba "Como validei" dentro do app, mostrando os resultados.
+1. **Conferir o deploy:** `GROQ_API_KEY` nos Secrets do Streamlit Cloud e um diagnóstico gerado no link público (janela anônima). A primeira visita gasta uma chamada, pois o cache começa vazio.
+2. (Opcional) Aba "Como validei" dentro do app, mostrando os resultados.
+3. (Opcional) O pandas mandar o impacto combinado dos dois restaurantes com gargalo, para a IA não somar sozinha.
 
 ### Não fazer
 - Não baixar o limite de 8 pontos só para o teste passar (corrija a causa, como o impacto já calculado pelo pandas).
