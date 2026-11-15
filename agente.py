@@ -48,9 +48,10 @@ Regras:
 - Não faça contas: não some, não subtraia e não tire média de números. Se um padrão envolve
   mais de um segmento, cite os números de cada um separadamente.
 - Cada padrão deve citar a evidência numérica: a taxa do segmento, a taxa de referência e o n.
-- Ignore segmentos com menos de 50 pedidos.
-- Se não houver diferença relevante (menos de 8 pontos percentuais acima da média geral),
-  diga que não há padrão claro em vez de forçar uma conclusão. Nesse caso, a lista de padrões
+- Só aponte como padrão os segmentos com relevante = "sim" (decidido pelo pandas: n de pelo menos
+  50 e taxa 8 pontos ou mais acima da média geral). Segmentos com relevante = "não" não são padrão,
+  mesmo que pareçam um pouco acima da média.
+- Se nenhum segmento for relevante, diga que não há padrão claro em vez de forçar uma conclusão. Nesse caso, a lista de padrões
   pode ter menos de 3 itens ou ficar vazia.
 - Prefira as combinações (ex.: chuva × pico, modal × distância) quando elas explicarem
   melhor o atraso do que o segmento isolado.
@@ -136,8 +137,8 @@ def _chamar_gemini(modelo: str, conteudo: str, chave: str, nivel: str | None) ->
         thinking_config=types.ThinkingConfig(thinking_level=nivel) if nivel else None,
     )
     try:
-        resposta = genai.Client(api_key=chave).models.generate_content(
-            model=modelo, contents=conteudo, config=config)
+        cliente = genai.Client(api_key=chave)  # em variável: sem isso o cliente é fechado antes da chamada
+        resposta = cliente.models.generate_content(model=modelo, contents=conteudo, config=config)
     except errors.APIError as e:
         if e.code == 429 and "PerDay" in str(e):
             raise _Falha("pular_modelo", str(e), cota=True) from e  # cota do dia acabou

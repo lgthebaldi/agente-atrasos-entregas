@@ -75,11 +75,17 @@ E um **teste negativo**: `gerar_dados.py --controle` gera a mesma base **sem** o
 | **Base sem padrões** (gemini-3.6-flash, modelo principal, 15/11) | 2 padrões apontados em 3 de 3 execuções, todos de bicicleta, sem inventar padrão de região, hora ou restaurante | nenhum | ~3 s |
 | gemini-3.6-flash, raciocínio padrão (antes dos ajustes) | 4/4 em 1 de 3 (Zona Leste falhou em 2) | a IA recalculou contagens | ~26 s |
 | gemini-3.5-flash-lite (modelo reserva) | 3/4 em 3 de 3 (não acha a Zona Leste) | nenhum | ~4 s |
+| **gemini-3.6-flash com marcação de relevância pelo pandas** (15/11) | **4/4 em 3 de 3 execuções** | nenhum | ~7 s |
+| **qwen3.8-27b no Groq com marcação de relevância pelo pandas** (15/11) | **4/4 em 3 de 3 execuções** | nenhum | ~5 s |
+| **Base sem padrões, Gemini com a marcação** | 2 padrões de bicicleta em 3 de 3 execuções, nada de região, hora ou restaurante | nenhum | ~5 s |
+| **Base sem padrões, Groq com a marcação** | 2 padrões de bicicleta em 3 de 3 execuções, nada de "Zona Leste" inventada | nenhum | ~4 s |
 | Base sem padrões (reserva lite, teste anterior) | apontou só "bicicleta em rota longa" | nenhum | ~2 s |
 
 As saídas completas estão em [`resultados_validacao/`](./resultados_validacao).
 
 Na base sem padrões, o modelo principal apontou "bicicleta acima de 4 km" (23,3% contra 5,3% da média, efeito real do gerador) e também "bicicleta até 4 km" (11,4%), que fica só 6,1 pontos acima da média, abaixo do limite de 8 pontos do prompt. É um deslize pequeno e honesto de registrar; o limite não foi alterado.
+
+Na versão com a marcação, o pandas decide quais segmentos são relevantes (n ≥ 50 e pelo menos 8 pontos acima da média) e a IA só explica. Nas execuções positivas, a IA também citou as noites de sexta e sábado, que de fato estão acima da média e são marcadas como relevantes. Uma execução do Groq falhou uma vez por limite de tokens de saída por minuto e foi repetida depois de 70 s.
 
 ### O que a validação me ensinou
 

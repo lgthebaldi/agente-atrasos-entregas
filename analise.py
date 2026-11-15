@@ -20,6 +20,7 @@ ORDEM_DIAS = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domi
 PICO_INICIO, PICO_FIM = 19, 21   # pico do jantar, inclusive
 LIMITE_DISTANCIA_KM = 4          # fronteira usada para bicicleta
 NOITE_A_PARTIR = 19              # "noite" para sexta e sábado
+LIMITE_RELEVANTE_PP = 8           # pontos acima da média geral para um segmento contar como padrão
 N_MINIMO = 50                    # segmentos menores que isso não sustentam conclusão
 
 
@@ -114,7 +115,9 @@ def _linhas(t: pd.DataFrame, chave: str, taxa_geral: float) -> list[dict]:
     return [
         {"segmento": str(r[chave]), "n": int(r["pedidos"]), "atrasados": int(r["atrasados"]),
          "taxa_atraso_pct": float(r["taxa_atraso_pct"]),
-         "excesso_atrasados": int(round(r["atrasados"] - r["pedidos"] * taxa_geral))}
+         "excesso_atrasados": int(round(r["atrasados"] - r["pedidos"] * taxa_geral)),
+         "relevante": "sim" if (r["pedidos"] >= N_MINIMO and
+                                r["taxa_atraso_pct"] - taxa_geral * 100 >= LIMITE_RELEVANTE_PP) else "não"}
         for _, r in t.iterrows()
     ]
 
@@ -135,7 +138,9 @@ def resumo_para_ia(d: pd.DataFrame) -> dict:
             f"Estatísticas já calculadas. Taxa = % de pedidos atrasados. "
             "n = número de pedidos do segmento. 'excesso_atrasados' = atrasos a mais do que o "
             "esperado se o segmento tivesse a taxa geral (mede o impacto: taxa x volume). "
-            f"Segmentos com n < {N_MINIMO} não sustentam conclusão."
+            f"Segmentos com n < {N_MINIMO} não sustentam conclusão. "
+            f"'relevante' = 'sim' quando o segmento tem n >= {N_MINIMO} e taxa pelo menos "
+            f"{LIMITE_RELEVANTE_PP} pontos acima da média geral (decidido pelo pandas)."
         ),
         "geral": {
             "pedidos": k["pedidos"],
