@@ -122,6 +122,22 @@ def _linhas(t: pd.DataFrame, chave: str, taxa_geral: float) -> list[dict]:
     ]
 
 
+def restaurantes_relevantes_juntos(d: pd.DataFrame, taxa_geral: float) -> pd.DataFrame:
+    """
+    Soma, no pandas, os restaurantes marcados como relevantes (n >= N_MINIMO e taxa pelo menos
+    LIMITE_RELEVANTE_PP acima da média). Assim a IA cita o impacto combinado sem fazer contas.
+    Vazio se houver menos de 2 restaurantes relevantes.
+    """
+    t = taxa_por(d, "restaurante")
+    rel = t[(t["pedidos"] >= N_MINIMO) & (t["taxa_atraso_pct"] - taxa_geral * 100 >= LIMITE_RELEVANTE_PP)]
+    if len(rel) < 2:
+        return pd.DataFrame(columns=["segmento", "pedidos", "atrasados", "taxa_atraso_pct"])
+    pedidos, atrasados = int(rel["pedidos"].sum()), int(rel["atrasados"].sum())
+    nomes = " + ".join(sorted(rel["restaurante"]))
+    return pd.DataFrame([{"segmento": f"Restaurantes com gargalo juntos ({nomes})", "pedidos": pedidos,
+                          "atrasados": atrasados, "taxa_atraso_pct": round(100 * atrasados / pedidos, 1)}])
+
+
 def resumo_para_ia(d: pd.DataFrame) -> dict:
     """
     Resumo compacto (poucos KB) que vai para a IA.
@@ -159,6 +175,7 @@ def resumo_para_ia(d: pd.DataFrame) -> dict:
             "chuva_x_pico_jantar": L(chuva_x_pico(d), "segmento"),
             "modal_x_distancia": L(modal_x_distancia(d), "segmento"),
             "noites_sexta_sabado_vs_outras": L(fim_de_semana_noite(d), "segmento"),
+            "restaurantes_relevantes_juntos": L(restaurantes_relevantes_juntos(d, tg), "segmento"),
         },
         "tempos_medios": {
             "por_restaurante": tempos_medios(d, "restaurante").to_dict(orient="records"),

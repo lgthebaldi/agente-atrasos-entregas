@@ -1,0 +1,96 @@
+{
+  "base": "data/entregas_controle.csv",
+  "controle": true,
+  "resultados": [
+    {
+      "execucao": 1,
+      "modelo": "qwen/qwen3.8-27b",
+      "nivel": "low",
+      "segundos": 4.9,
+      "encontrados": {
+        "Chuva no pico do jantar": false,
+        "Bicicleta acima de 4 km": true,
+        "Restaurantes com gargalo": false,
+        "Zona Leste": false
+      },
+      "extras": [],
+      "numeros_suspeitos": [],
+      "n_padroes": 2,
+      "diagnostico": {
+        "resumo": "A análise das estatísticas de atraso revela que o principal problema de entrega não está relacionado a regiões, horários, clima ou restaurantes específicos, mas sim ao modal de transporte. As entregas realizadas por bicicleta apresentam taxas de atraso muito superiores à média geral, especialmente quando a distância é superior a 4 km. A frota de motos, por outro lado, opera com taxas de atraso muito baixas (1,6% no total e 0,7% para distâncias acima de 4 km). As ações recomendadas focam em otimizar o uso da bicicleta, limitando distâncias e avaliando a capacidade da frota.",
+        "padroes": [
+          {
+            "padrao": "Entregas por bicicleta em distâncias acima de 4 km",
+            "evidencia": "Segmento 'Bicicleta · acima de 4 km': 550 pedidos, taxa de atraso de 23,3% (média geral: 5,3%), 99 atrasos acima do esperado.",
+            "causa_provavel": "A combinação de modal de entrega (bicicleta) com distância longa (acima de 4 km) é o principal driver de atrasos. A taxa de atraso neste segmento é de 23,3%, muito acima da média geral de 5,3%. O volume de pedidos é significativo (550 pedidos), resultando em 99 atrasos acima do esperado. Isso sugere que a bicicleta não é eficiente para distâncias maiores, possivelmente devido à fadiga do entregador, velocidade média baixa ou falta de infraestrutura adequada.",
+            "acao_sugerida": "Revisar a política de roteirização para bicicletas. Testar a viabilidade de limitar a distância máxima de entrega por bicicleta para 4 km ou menos, redirecionando pedidos mais longos para motos. Implementar um piloto de 2 semanas em uma região específica para medir a redução no tempo de entrega e no índice de atraso.",
+            "metrica_para_acompanhar": "Taxa de atraso de entregas por bicicleta com distância acima de 4 km."
+          },
+          {
+            "padrao": "Entregas realizadas por bicicleta",
+            "evidencia": "Segmento 'Bicicleta': 1.241 pedidos, taxa de atraso de 16,7% (média geral: 5,3%), 141 atrasos acima do esperado.",
+            "causa_provavel": "O modal de bicicleta, de forma isolada, apresenta uma taxa de atraso de 16,7%, significativamente superior à média geral de 5,3%. Com 1.241 pedidos, isso gera 141 atrasos acima do esperado. Embora a combinação com distância longa seja o maior problema, o alto índice geral do modal indica que há uma ineficiência sistêmica na operação de bicicletas, possivelmente relacionada à capacidade da frota ou à logística de coleta.",
+            "acao_sugerida": "Avaliar a capacidade da frota de bicicletas. Considerar o aumento do número de entregadores de bicicleta disponíveis ou a otimização da alocação de pedidos para evitar sobrecarga. Testar a hipótese de que a alta taxa de atraso está ligada à saturação da frota de bicicletas em relação ao volume de pedidos atribuídos a esse modal.",
+            "metrica_para_acompanhar": "Taxa de atraso geral do modal bicicleta."
+          }
+        ],
+        "limitacoes": "A análise identificou apenas 2 padrões estatisticamente relevantes (com volume mínimo de 50 pedidos e taxa de atraso pelo menos 8 pontos percentuais acima da média geral de 5,3%). Não há outros segmentos que atendam a esses critérios de relevância. Portanto, a lista de padrões contém apenas 2 itens, em vez do mínimo de 3 solicitado, pois forçar conclusões com dados não relevantes violaria as regras de análise."
+      }
+    },
+    {
+      "execucao": 2,
+      "modelo": "qwen/qwen3.8-27b",
+      "nivel": "low",
+      "segundos": 2.5,
+      "encontrados": {
+        "Chuva no pico do jantar": false,
+        "Bicicleta acima de 4 km": true,
+        "Restaurantes com gargalo": false,
+        "Zona Leste": false
+      },
+      "extras": [],
+      "numeros_suspeitos": [],
+      "n_padroes": 2,
+      "diagnostico": {
+        "resumo": "A análise identificou 2 padrões relevantes de atraso, ambos ligados ao modal de transporte por bicicleta. O principal problema ocorre quando a bicicleta é usada para distâncias acima de 4 km, onde a taxa de atraso chega a 23,3%. Não foram identificados outros padrões relevantes (como chuva, região ou horário) que superassem o limiar de significância estatística definido.",
+        "padroes": [
+          {
+            "padrao": "Pedidos feitos por bicicleta em distâncias longas (acima de 4 km)",
+            "evidencia": "Segmento 'Bicicleta · acima de 4 km': 550 pedidos, taxa de atraso de 23,3% (média geral: 5,3%), resultando em 99 atrasos acima do esperado.",
+            "causa_provavel": "A combinação de modal de transporte (bicicleta) com distância longa (acima de 4 km) é o principal gatilho de atraso. A taxa de atraso neste segmento é de 23,3%, muito acima da média geral de 5,3%. Isso representa 99 atrasos acima do esperado, indicando que a capacidade física do ciclista não acompanha a distância percorrida.",
+            "acao_sugerida": "Revisar a política de roteirização para bicicletas. Testar a viabilidade de transferir pedidos com distância superior a 4 km para motoristas de moto, ou ajustar o tempo estimado de entrega para refletir a realidade física do deslocamento a pé/de bicicleta em distâncias longas.",
+            "metrica_para_acompanhar": "Taxa de atraso de pedidos feitos por bicicleta com distância superior a 4 km."
+          },
+          {
+            "padrao": "Entregas realizadas por bicicleta",
+            "evidencia": "Segmento 'Bicicleta': 1.241 pedidos, taxa de atraso de 16,7% (média geral: 5,3%), resultando em 141 atrasos acima do esperado.",
+            "causa_provavel": "O modal de bicicleta, isoladamente, apresenta uma taxa de atraso de 16,7%, significativamente superior à média geral de 5,3%. Isso gera 141 atrasos acima do esperado. Mesmo que parte desse impacto seja explicada pela distância (padrão anterior), o modal em si é um fator de risco elevado para a pontualidade.",
+            "acao_sugerida": "Avaliar a capacidade da frota de bicicletas. Se a demanda por entregas a pé/de bicicleta for alta, considerar o aumento do número de ciclistas ativos ou a criação de zonas de exclusividade para motos em áreas de alta densidade de pedidos de bicicleta, para evitar sobrecarga.",
+            "metrica_para_acompanhar": "Taxa de atraso total do modal bicicleta."
+          }
+        ],
+        "limitacoes": "Nenhuma"
+      }
+    },
+    {
+      "execucao": 3,
+      "modelo": "qwen/qwen3.8-27b",
+      "nivel": "low",
+      "segundos": 1.8,
+      "encontrados": {
+        "Chuva no pico do jantar": false,
+        "Bicicleta acima de 4 km": false,
+        "Restaurantes com gargalo": false,
+        "Zona Leste": false
+      },
+      "extras": [],
+      "numeros_suspeitos": [],
+      "n_padroes": 0,
+      "diagnostico": {
+        "resumo": "A análise dos dados indica que não existem padrões claros de atraso que justifiquem ações específicas, exceto pela forte influência do modal de entrega. A taxa geral de atraso é de 5,3%. O único segmento relevante identificado é a entrega por bicicleta, que apresenta uma taxa de atraso de 16,7% (n=1.241), significativamente acima da média geral, resultando em 141 atrasos acima do esperado. Dentro desse modal, a combinação com distâncias acima de 4 km é ainda mais crítica, com taxa de 23,3% (n=550) e 99 atrasos acima do esperado. Nenhum outro segmento (região, hora, chuva, dia da semana ou restaurante individual) atinge o critério de relevância (n >= 50 e taxa 8 pontos acima da média). Portanto, a principal alavanca para redução de atrasos está na gestão da frota de bicicletas, especialmente em trajetos longos.",
+        "padroes": [],
+        "limitacoes": "Não há padrões claros de atraso além do modal de entrega."
+      }
+    }
+  ]
+}

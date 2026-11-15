@@ -53,6 +53,8 @@ Regras:
   mesmo que pareçam um pouco acima da média.
 - Se nenhum segmento for relevante, diga que não há padrão claro em vez de forçar uma conclusão. Nesse caso, a lista de padrões
   pode ter menos de 3 itens ou ficar vazia.
+- Quando o padrão envolver vários restaurantes, use a linha "restaurantes_relevantes_juntos" para o
+  total combinado (pedidos, atrasos e atrasos acima do esperado), em vez de somar por conta própria.
 - Prefira as combinações (ex.: chuva × pico, modal × distância) quando elas explicarem
   melhor o atraso do que o segmento isolado.
 - Ordene do maior para o menor impacto, usando o campo excesso_atrasados (já calculado).

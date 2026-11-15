@@ -1,0 +1,78 @@
+{
+  "base": "data/entregas_controle.csv",
+  "controle": true,
+  "resultados": [
+    {
+      "execucao": 1,
+      "modelo": "gemini-3.6-flash",
+      "nivel": "minimal",
+      "segundos": 3.7,
+      "encontrados": {
+        "Chuva no pico do jantar": false,
+        "Bicicleta acima de 4 km": true,
+        "Restaurantes com gargalo": false,
+        "Zona Leste": false
+      },
+      "extras": [],
+      "numeros_suspeitos": [],
+      "n_padroes": 2,
+      "diagnostico": {
+        "resumo": "A análise das operações indica que os atrasos estão concentrados no uso do modal de bicicleta, com impacto agravado em rotas de longa distância. Outros fatores isolados, como regiões, dias da semana, chuva ou horários específicos, não apresentaram desvios significativos que justifiquem padrões de atraso.",
+        "padroes": [
+          {
+            "padrao": "Entregas por bicicleta em distâncias superiores a 4 km",
+            "evidencia": "A taxa de atraso para a combinação 'Bicicleta · acima de 4 km' foi de 23,3% contra a média geral de 5,3%, totalizando 550 pedidos analisados e 99 atrasos acima do esperado.",
+            "causa_provavel": "Incapacidade física e operacional do modal cicloviário de cobrir longas distâncias dentro das janelas de tempo estimadas pela plataforma.",
+            "acao_sugerida": "Limitar o raio máximo de entrega para o modal bicicleta a no máximo 4 km no sistema de alocação de pedidos.",
+            "metrica_para_acompanhar": "Taxa de atraso de entregas por bicicleta em trajetos longos."
+          },
+          {
+            "padrao": "Uso geral do modal bicicleta",
+            "evidencia": "O segmento 'Bicicleta' registrou taxa de atraso de 16,7% frente à taxa geral de 5,3% (amostra de 1.241 pedidos), resultando em 141 atrasos acima do esperado.",
+            "causa_provavel": "Velocidade média inferior do modal em comparação às motos, aliada à alocação de chamados incompatíveis com a capacidade do veículo.",
+            "acao_sugerida": "Ajustar o tempo estimado de entrega (ETA) específico para bicicletas e priorizar rotas de curta distância para esses entregadores.",
+            "metrica_para_acompanhar": "Taxa de atraso geral do modal bicicleta."
+          }
+        ],
+        "limitacoes": "Os dados disponíveis não permitem avaliar fatores como o tempo individual de trânsito dos entregadores, o comportamento do tráfego urbano em tempo real, nem gargalos operacionais internos da cozinha de cada restaurante."
+      }
+    },
+    {
+      "execucao": 2,
+      "modelo": "gemini-3.6-flash",
+      "nivel": "minimal",
+      "segundos": 3.7,
+      "encontrados": {
+        "Chuva no pico do jantar": false,
+        "Bicicleta acima de 4 km": true,
+        "Restaurantes com gargalo": false,
+        "Zona Leste": false
+      },
+      "extras": [
+        "Uso geral do modal bicicleta nas entregas"
+      ],
+      "numeros_suspeitos": [],
+      "n_padroes": 2,
+      "diagnostico": {
+        "resumo": "A análise das estatísticas de entregas indica que os atrasos estão concentrados no uso inadequado do modal de bicicletas para longas distâncias. O principal gargalo da operação ocorre quando entregadores de bicicleta são alocados para rotas com percursos superiores a 4 km.",
+        "padroes": [
+          {
+            "padrao": "Entregas de bicicleta em trajetos de longa distância (acima de 4 km)",
+            "evidencia": "Taxa de atraso de 23,3% contra 5,3% da média geral da plataforma (n = 550 pedidos, gerando 99 atrasos acima do esperado).",
+            "causa_provavel": "Excesso de esforço físico e limitação de velocidade do entregador ciclista em trechos longos em comparação ao veículo motorizado.",
+            "acao_sugerida": "Limitar o raio máximo de despacho de pedidos para o modal bicicleta em até 4 km no sistema de alocação.",
+            "metrica_para_acompanhar": "Taxa de atraso em entregas por bicicleta em rotas acima de 4 km."
+          },
+          {
+            "padrao": "Uso geral do modal bicicleta nas entregas",
+            "evidencia": "Taxa de atraso de 16,7% contra 5,3% da média geral da plataforma (n = 1241 pedidos, gerando 141 atrasos acima do esperado).",
+            "causa_provavel": "Vulnerabilidade do modal a relevo, cansaço físico e trajetos incompatíveis com a capacidade de deslocamento de bicicletas.",
+            "acao_sugerida": "Revisar a política geral de alocação de bicicletas, priorizando rotas curtas e densas para esse modal.",
+            "metrica_para_acompanhar": "Taxa geral de atraso do modal bicicleta."
+          }
+        ],
+        "limitacoes": "Os dados fornecidos não detalham se fatores como topografia (subidas), condições de trânsito em horários específicos ou problemas operacionais dentro da cozinha dos restaurantes influenciaram o desempenho dos modais."
+      }
+    }
+  ]
+}

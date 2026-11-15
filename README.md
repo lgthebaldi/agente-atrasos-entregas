@@ -79,6 +79,10 @@ E um **teste negativo**: `gerar_dados.py --controle` gera a mesma base **sem** o
 | **qwen3.8-27b no Groq com marcação de relevância pelo pandas** (15/11) | **4/4 em 3 de 3 execuções** | nenhum | ~5 s |
 | **Base sem padrões, Gemini com a marcação** | 2 padrões de bicicleta em 3 de 3 execuções, nada de região, hora ou restaurante | nenhum | ~5 s |
 | **Base sem padrões, Groq com a marcação** | 2 padrões de bicicleta em 3 de 3 execuções, nada de "Zona Leste" inventada | nenhum | ~4 s |
+| **Com impacto combinado dos restaurantes calculado pelo pandas** (Gemini, 15/11) | **4/4 em 3 de 3 execuções** | nenhum (o 263 agora vem pronto no resumo) | ~7 s |
+| **Com impacto combinado** (Groq, 15/11) | **4/4 em 3 de 3 execuções** | nenhum | ~7 s |
+| **Base sem padrões com impacto combinado** (Gemini, 2 execuções) | 2 padrões de bicicleta nas 2 execuções | nenhum | ~4 s |
+| **Base sem padrões com impacto combinado** (Groq, 3 execuções) | 2 padrões de bicicleta em 2 execuções; na 3ª não listou padrões e citou a bicicleta só no resumo | nenhum | ~3 s |
 | Base sem padrões (reserva lite, teste anterior) | apontou só "bicicleta em rota longa" | nenhum | ~2 s |
 
 As saídas completas estão em [`resultados_validacao/`](./resultados_validacao).

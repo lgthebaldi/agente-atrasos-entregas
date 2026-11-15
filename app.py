@@ -346,12 +346,12 @@ def tela_mapa(d: pd.DataFrame):
 
 
 # ---------- validação ----------
-# Execuções medidas em 15/11 com o prompt atual (arquivos em resultados_validacao/).
+# Execuções medidas em 15/11 com o prompt atual (com o impacto combinado dos restaurantes) (arquivos em resultados_validacao/).
 RODADAS_VALIDACAO = [
-    ("Gemini · base de exemplo", ["gemini_positivo_v2.json"], False),
-    ("Groq (qwen) · base de exemplo", ["groq_positivo.json"], False),
-    ("Gemini · base sem padrões", ["gemini_controle_v2.json"], True),
-    ("Groq (qwen) · base sem padrões", ["groq_controle.json", "groq_controle_3.json"], True),
+    ("Gemini · base de exemplo", ["gemini_positivo_v3.json"], False),
+    ("Groq (qwen) · base de exemplo", ["groq_positivo_v3.json"], False),
+    ("Gemini · base sem padrões", ["gemini_controle_v3.json"], True),
+    ("Groq (qwen) · base sem padrões", ["groq_controle_v3.json"], True),
 ]
 
 
@@ -382,7 +382,7 @@ def tela_validacao():
         suspeitos = sum(1 for r in rs if r.get("numeros_suspeitos"))
         if controle:
             apontados = sorted({p["padrao"] for r in rs for p in r["diagnostico"]["padroes"]})
-            resultado = f"{max(r['n_padroes'] for r in rs)} padrões por execução, todos de bicicleta"
+            resultado = f"até {max(r['n_padroes'] for r in rs)} padrões por execução, todos de bicicleta"
             if any("bicicleta" not in _norm_txt(p) for p in apontados):
                 resultado = "apontou também outros segmentos: veja os arquivos de resultado"
         else:

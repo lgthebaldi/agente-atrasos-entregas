@@ -1,0 +1,174 @@
+{
+  "base": "/home/user/agente-atrasos-entregas/data/entregas_ficticias.csv",
+  "controle": false,
+  "resultados": [
+    {
+      "execucao": 1,
+      "modelo": "gemini-3.6-flash",
+      "nivel": "minimal",
+      "segundos": 6.1,
+      "encontrados": {
+        "Chuva no pico do jantar": true,
+        "Bicicleta acima de 4 km": true,
+        "Restaurantes com gargalo": true,
+        "Zona Leste": true
+      },
+      "extras": [],
+      "numeros_suspeitos": [],
+      "n_padroes": 5,
+      "diagnostico": {
+        "resumo": "Identificamos gargalos críticos concentrados em entregas por bicicleta a longa distância, dias de chuva combinados ao horário de pico e demoras específicas na cozinha de dois parceiros. A implementação de regras de raio para ciclistas e incentivos em dias chuvosos é fundamental para reduzir drasticamente o tempo de espera dos clientes.",
+        "padroes": [
+          {
+            "padrao": "Entregas de bicicleta em longas distâncias",
+            "evidencia": "O segmento 'Bicicleta · acima de 4 km' registra 561 pedidos e uma taxa de atraso de 91,4%, comparada à média geral de 28,2%. Isso gera 355 atrasos acima do esperado.",
+            "causa_provavel": "Falta de capacidade física e velocidade dos ciclistas para percorrer trajetos longos no tempo estimado pelo aplicativo.",
+            "acao_sugerida": "Limitar o raio máximo de entrega para o modal bicicleta em até 4 km no sistema de alocação de pedidos.",
+            "metrica_para_acompanhar": "Taxa de atraso em entregas de bicicleta acima de 4 km."
+          },
+          {
+            "padrao": "Gargalo operacional em restaurantes específicos",
+            "evidencia": "O grupo 'Restaurantes com gargalo juntos (Churrascaria Fogo Bravo + Pizzaria Bella Massa)' soma 829 pedidos e uma taxa de atraso de 60,0%, frente à média geral de 28,2%. Isso resulta em 263 atrasos acima do esperado.",
+            "causa_provavel": "Tempo de preparo interno muito elevado nestes estabelecimentos (média de 25,3 e 24,9 minutos, respectivamente, contra cerca de 15 minutos dos demais).",
+            "acao_sugerida": "Ajustar o tempo estimado de preparo informado pelo aplicativo para esses restaurantes e oferecer consultoria operacional de cozinha.",
+            "metrica_para_acompanhar": "Tempo médio de preparo da Churrascaria Fogo Bravo e da Pizzaria Bella Massa."
+          },
+          {
+            "padrao": "Chuva durante o horário de pico do jantar",
+            "evidencia": "O segmento 'Com chuva · pico (19h–21h)' apresenta 341 pedidos e taxa de atraso de 81,2%, contra 28,2% da média geral. O excesso é de 181 atrasos acima do esperado.",
+            "causa_provavel": "Redução da frota de entregadores nas ruas sob chuva combinada à altíssima demanda concentrada no jantar.",
+            "acao_sugerida": "Acionar tarifa dinâmica e bônus de incentivo para entregadores parceiros em momentos de chuva e pico.",
+            "metrica_para_acompanhar": "Taxa de atraso no segmento com chuva no pico (19h–21h)."
+          },
+          {
+            "padrao": "Dias de chuva fora do horário de pico",
+            "evidencia": "O segmento 'Com chuva · fora do pico' computa 541 pedidos e taxa de atraso de 48,1%, em relação aos 28,2% da média geral. O impacto é de 107 atrasos acima do esperado.",
+            "causa_provavel": "Trânsito lento e deslocamento mais cauteloso dos entregadores sob pista molhada, mesmo em horários mais tranquilos.",
+            "acao_sugerida": "Expandir automaticamente a tolerância dos tempos de entrega prometidos aos clientes em períodos chuvosos.",
+            "metrica_para_acompanhar": "Taxa de atraso em dias chuvosos fora do pico."
+          },
+          {
+            "padrao": "Gargalo logístico na Zona Leste",
+            "evidencia": "O segmento 'Zona Leste' possui 903 pedidos e taxa de atraso de 36,3%, superando a média geral de 28,2%. Representa 73 atrasos acima do esperado.",
+            "causa_provavel": "Distância média percorrida mais alta (5,8 km) e maior tempo de espera dos entregadores pelos pedidos (6,2 minutos).",
+            "acao_sugerida": "Redimensionar o raio de atendimento na Zona Leste ou reequilibrar a alocação de entregadores na região.",
+            "metrica_para_acompanhar": "Taxa de atraso de entregas na Zona Leste."
+          }
+        ],
+        "limitacoes": "Os dados disponíveis mostram estatísticas agregadas e médias de tempos, mas não permitem avaliar individualmente o trânsito em tempo real, fatores climáticos locais específicos, a variação do tamanho ou complexidade dos itens dos pedidos, nem o comportamento individual de cada entregador."
+      }
+    },
+    {
+      "execucao": 2,
+      "modelo": "gemini-3.6-flash",
+      "nivel": "minimal",
+      "segundos": 7.1,
+      "encontrados": {
+        "Chuva no pico do jantar": true,
+        "Bicicleta acima de 4 km": true,
+        "Restaurantes com gargalo": true,
+        "Zona Leste": true
+      },
+      "extras": [],
+      "numeros_suspeitos": [],
+      "n_padroes": 5,
+      "diagnostico": {
+        "resumo": "Identificamos que a combinação de entregas por bicicleta em trajetos longos e os dias de chuva no horário do jantar são os principais causadores de atrasos na plataforma. Além disso, dois restaurantes específicos apresentam um alto tempo de preparo que impacta diretamente a operação.",
+        "padroes": [
+          {
+            "padrao": "Entregas por bicicleta em distâncias longas (acima de 4 km)",
+            "evidencia": "Taxa de atraso de 91,4% (513 atrasos em 561 pedidos), gerando 355 atrasos acima do esperado. A taxa geral da plataforma é de 28,2%.",
+            "causa_provavel": "Incompatibilidade física do modal de bicicleta para percorrer longos trajetos no tempo estipulado pela plataforma.",
+            "acao_sugerida": "Limitar o raio de entrega para entregadores de bicicleta a no máximo 4 km no aplicativo.",
+            "metrica_para_acompanhar": "Taxa de atraso de entregas por bicicleta em distâncias acima de 4 km."
+          },
+          {
+            "padrao": "Chuva combinada com o horário de pico do jantar (19h às 21h)",
+            "evidencia": "Taxa de atraso de 81,2% (277 atrasos em 341 pedidos), resultando em 181 atrasos acima do esperado, frente à média geral de 28,2%.",
+            "causa_provavel": "Redução da velocidade do trânsito, maior cuidado na pilotagem e diminuição da oferta de entregadores durante tempestades no pico.",
+            "acao_sugerida": "Expandir temporariamente o tempo estimado de entrega exibido ao cliente quando houver chuva no horário de pico e oferecer incentivos financeiros para atração de entregadores.",
+            "metrica_para_acompanhar": "Taxa de atraso nos pedidos feitos em períodos de chuva entre 19h e 21h."
+          },
+          {
+            "padrao": "Gargalo de preparo em restaurantes específicos (Churrascaria Fogo Bravo e Pizzaria Bella Massa)",
+            "evidencia": "Juntos, os dois restaurantes somam 829 pedidos e 497 atrasos, com taxa de 60,0% e 263 atrasos acima do esperado (Churrascaria Fogo Bravo com 60,0% em 420 pedidos e Pizzaria Bella Massa com 59,9% em 409 pedidos, contra a taxa geral de 28,2%).",
+            "causa_provavel": "Tempo médio de preparo elevado dos pratos (25,3 minutos na Churrascaria e 24,9 minutos na Pizzaria, enquanto os demais restaurantes variam em torno de 15 minutos).",
+            "acao_sugerida": "Ajustar o tempo padrão de preparo desses dois estabelecimentos no sistema antes de acionar o entregador, evitando tempo ocioso na espera.",
+            "metrica_para_acompanhar": "Taxa de atraso combinada dos restaurantes Churrascaria Fogo Bravo e Pizzaria Bella Massa."
+          },
+          {
+            "padrao": "Entregas em dias de chuva fora do horário de pico",
+            "evidencia": "Taxa de atraso de 48,1% (260 atrasos em 541 pedidos), gerando 107 atrasos acima do esperado, em comparação à taxa geral de 28,2%.",
+            "causa_provavel": "Dificuldades de locomoção e escassez de entregadores em momentos chuvosos, mesmo sem a demanda máxima de pedidos.",
+            "acao_sugerida": "Aumentar a margem de tempo de entrega exibida ao cliente sempre que a condição meteorológica indicar chuva.",
+            "metrica_para_acompanhar": "Taxa de atraso dos pedidos em períodos chuvosos fora do horário de pico."
+          },
+          {
+            "padrao": "Atrasos recorrentes na Zona Leste",
+            "evidencia": "Taxa de atraso de 36,3% (328 atrasos em 903 pedidos), gerando 73 atrasos acima do esperado, superando a taxa geral de 28,2%.",
+            "causa_provavel": "Distância média percorrida mais alta (5,8 km na Zona Leste contra 2,5 km a 4,2 km nas outras regiões) aliada ao maior tempo médio de espera pelo entregador (6,2 minutos).",
+            "acao_sugerida": "Redimensionar o raio de cobertura dos restaurantes da Zona Leste ou atrair mais entregadores para a região a fim de reduzir a espera.",
+            "metrica_para_acompanhar": "Taxa de atraso da Zona Leste."
+          }
+        ],
+        "limitacoes": "Os dados fornecidos são agregados e não acompanham o histórico individual de cada entregador ou cliente, impedindo identificar se atrasos específicos são causados por fatores como problemas de navegação via GPS, falhas de comunicação no momento da entrega ou comportamento de usuários específicos."
+      }
+    },
+    {
+      "execucao": 3,
+      "modelo": "gemini-3.6-flash",
+      "nivel": "minimal",
+      "segundos": 6.9,
+      "encontrados": {
+        "Chuva no pico do jantar": true,
+        "Bicicleta acima de 4 km": true,
+        "Restaurantes com gargalo": true,
+        "Zona Leste": true
+      },
+      "extras": [],
+      "numeros_suspeitos": [],
+      "n_padroes": 5,
+      "diagnostico": {
+        "resumo": "Identificamos 5 padrões estatisticamente relevantes que concentram os atrasos nas entregas da plataforma, liderados pelo uso inadequado de bicicletas em trajetos longos e por entregas sob chuva no horário de pico. Ações focadas em limitação de raio de entrega para ciclistas, incentivos operacionais durante a chuva e ajustes no tempo de preparo de parceiros específicos podem reduzir significativamente esses atrasos.",
+        "padroes": [
+          {
+            "padrao": "Entregas de bicicleta em trajetos acima de 4 km",
+            "evidencia": "O segmento 'Bicicleta · acima de 4 km' registra taxa de atraso de 91,4% em um total de 561 pedidos, gerando 355 atrasos acima do esperado quando comparado à média geral da plataforma de 28,2%.",
+            "causa_provavel": "Faltam pernas e velocidade física aos ciclistas para cobrir longas distâncias dentro das janelas de tempo estimadas pelo aplicativo.",
+            "acao_sugerida": "Limitar o raio máximo de despacho de pedidos para o modal bicicleta em até 4 km nas configurações do sistema.",
+            "metrica_para_acompanhar": "Taxa de atraso de pedidos alocados para bicicletas em distâncias superiores a 4 km."
+          },
+          {
+            "padrao": "Entregas com chuva durante o horário de pico do jantar",
+            "evidencia": "O segmento 'Com chuva · pico (19h–21h)' apresenta taxa de atraso de 81,2% em 341 pedidos, resultando em 181 atrasos acima do esperado em relação à média geral de 28,2%.",
+            "causa_provavel": "Aumento do trânsito, menor velocidade de navegação por segurança e escassez de entregadores dispostos a rodar sob tempestades no horário de maior demanda.",
+            "acao_sugerida": "Implementar tarifa variável/adicional dinâmico para entregadores durante chuvas no horário de pico e estender temporariamente o tempo estimado de entrega exibido ao cliente final.",
+            "metrica_para_acompanhar": "Taxa de atraso no segmento 'Com chuva · pico (19h–21h)'."
+          },
+          {
+            "padrao": "Gargalo de preparo em restaurantes específicos",
+            "evidencia": "O grupo 'Restaurantes com gargalo juntos (Churrascaria Fogo Bravo + Pizzaria Bella Massa)' contabiliza 829 pedidos com taxa de atraso de 60,0% (Churrascaria Fogo Bravo isoladamente com 60,0% em 420 pedidos e Pizzaria Bella Massa com 59,9% em 409 pedidos), gerando 263 atrasos acima do esperado contra a média geral de 28,2%.",
+            "causa_provavel": "Tempo de preparo interno da cozinha excessivamente alto (média de 25,3 minutos na Churrascaria Fogo Bravo e 24,9 minutos na Pizzaria Bella Massa, contra a média de ~15 minutos dos demais parceiros).",
+            "acao_sugerida": "Ajustar o tempo estimado de preparo padrão dessas duas lojas no sistema para 25-30 minutos antes de disparar o chamado ao entregador.",
+            "metrica_para_acompanhar": "Tempo médio de espera do entregador no restaurante e taxa de atraso dos dois estabelecimentos."
+          },
+          {
+            "padrao": "Entregas com chuva fora do horário de pico",
+            "evidencia": "O segmento 'Com chuva · fora do pico' apresenta taxa de atraso de 48,1% em 541 pedidos, registrando 107 atrasos acima do esperado em relação à média geral da plataforma de 28,2%.",
+            "causa_provavel": "Redução geral na velocidade do tráfego e cautela no deslocamento dos entregadores devido à pista molhada, mesmo sem o volume alto de pedidos da noite.",
+            "acao_sugerida": "Adicionar automaticamente uma margem de segurança ao tempo estimado de entrega sempre que houver detecção de chuva na região.",
+            "metrica_para_acompanhar": "Taxa de atraso em períodos chuvosos fora dos horários de pico."
+          },
+          {
+            "padrao": "Gargalo logístico na Zona Leste",
+            "evidencia": "O segmento 'Zona Leste' teve taxa de atraso de 36,3% em 903 pedidos, gerando 73 atrasos acima do esperado quando comparado à média geral de 28,2%.",
+            "causa_provavel": "Distância média percorrida significativamente maior (5,8 km na Zona Leste contra 2,5 km a 4,2 km nas outras regiões) e maior tempo médio de espera (6,2 minutos).",
+            "acao_sugerida": "Redefinir o raio de entrega dos restaurantes localizados na Zona Leste ou rebalancear a frota de entregadores parceiros atuantes na região.",
+            "metrica_para_acompanhar": "Taxa de atraso regional da Zona Leste e distância média percorrida por entrega na região."
+          }
+        ],
+        "limitacoes": "Os dados fornecidos são agregados estatisticamente e não mostram a interação simultânea de todas as variáveis (por exemplo, o impacto exato do modal bicicleta especificamente na Zona Leste ou em dias de chuva). Além disso, não há dados individuais de rotas, condições de tráfego em tempo real ou perfil detalhado dos entregadores."
+      }
+    }
+  ]
+}
