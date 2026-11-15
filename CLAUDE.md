@@ -5,6 +5,41 @@
 
 ---
 
+## 0. Estado atual e como retomar (atualizado em 15/11/2026)
+
+> As seções 1 a 16 abaixo são o plano original. **O estado real é este bloco.**
+
+### Onde está
+- App no ar: https://agente-atrasos.streamlit.app · Repositório: https://github.com/lgthebaldi/agente-atrasos-entregas
+- `main` tem: análise com pandas, 4 abas (Visão geral, **Mapa** de São Paulo com filtros, Onde está o atraso, Diagnóstico da IA), agente com Gemini (`gemini-3.6-flash`, raciocínio `minimal`), `validacao.py`, README com GIF, LICENSE e `cover.png`.
+- **O Streamlit Cloud publica sozinho a cada push no `main`.** Mudança de código arriscada vai em branch e só entra no `main` depois de testada.
+- Branch `groq-reserva`: integração com o Groq (`qwen/qwen3.8-27b`). **Não está no `main`** (ver pendência 2).
+- Commits saem no nome do Luis (git config local) e mantêm o Claude como coautor.
+
+### Chaves numa sessão de nuvem (leia antes de dizer "falta chave")
+- As chaves **não são variáveis de ambiente de verdade**. Ficam como *segredos de rede* do ambiente **"GEN IA iFood"** (`generativelanguage.googleapis.com` com o cabeçalho `x-goog-api-key` e `api.groq.com` com `Authorization: Bearer`). O proxy da sessão coloca a chave real na chamada.
+- Por isso o ambiente define `GEMINI_API_KEY=proxy-injected` e `GROQ_API_KEY=proxy-injected`: é um **valor de mentira** só para o código achar uma variável. O proxy o troca pela chave real. Não é segredo.
+- **Nunca peça nem cole uma chave real no chat.** Se faltar chave: (1) confira se a sessão foi criada no ambiente **GEN IA iFood** (e não no "Default", que não tem as chaves); (2) se vier erro `401/403` ou `request blocked: no rule allows host`, espere cerca de 1 minuto e tente de novo.
+- A rede do ambiente é limitada. Hosts liberados além dos padrões: `agente-atrasos.streamlit.app`, `share.streamlit.io`, `basemaps.cartocdn.com`, `tiles.basemaps.cartocdn.com`, `lgthebaldi.github.io`.
+- No computador do Luis, a chave real fica no `.env` (fora do git).
+
+### Cotas do plano gratuito (gaste com cuidado)
+- **Gemini:** cerca de 20 chamadas por dia **por modelo**. `gemini-3.5-flash` divide a cota com o `3.6`. Erro 429 "PerDay" não adianta esperar.
+- **Groq:** 1.000 chamadas por dia, mas só 8.000 tokens por minuto (cerca de 1 diagnóstico por minuto): deixe **70 s ou mais** entre execuções.
+- O app guarda o diagnóstico em cache por 6 h (chave: resumo + versão do prompt) e, se a cota acabar, mostra um diagnóstico real já validado (`data/diagnostico_exemplo.json`).
+
+### Pendências, em ordem
+1. **Revalidar o Gemini com o prompt atual** (a última validação foi antes do ajuste de vírgula decimal e de "sem nomes técnicos"): `python validacao.py --execucoes 3 --modelo gemini-3.6-flash --pausa 30` e **o teste negativo no modelo principal** (`python gerar_dados.py --controle`, depois `python validacao.py --base data/entregas_controle.csv --controle --execucoes 3`). Hoje o negativo só foi feito no modelo reserva `lite`. Atualizar a tabela de resultados do README.
+2. **Groq:** o `qwen` acha os 4 padrões (4/4), mas **inventa padrões fracos** na base sem padrões (ex.: "Zona Leste" com 1,4 ponto acima da média). Antes de entrar no `main`: o **pandas** deve marcar no resumo quais segmentos são relevantes (≥ 8 pontos acima da média e n ≥ 50), em vez de deixar a IA decidir; depois revalidar positivo e negativo. Só então mesclar `groq-reserva`.
+3. (Opcional) Aba "Como validei" dentro do app, mostrando os resultados.
+
+### Não fazer
+- Não baixar o limite de 8 pontos só para o teste passar (corrija a causa, como o impacto já calculado pelo pandas).
+- Não commitar chaves; conferir `git diff --cached` antes de cada push.
+- Não misturar com o projeto 2 ("Chega bem até você?", com Ollama): ele vive em outra pasta/repositório.
+
+---
+
 ## 1. Por que este projeto existe
 
 - Sou estudante de Engenharia de Controle e Automação (Unicamp, formatura no 2º semestre de 2027) e estagiário de engenharia na indústria.
