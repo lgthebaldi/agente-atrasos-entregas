@@ -71,12 +71,15 @@ E um **teste negativo**: `gerar_dados.py --controle` gera a mesma base **sem** o
 
 | Configuração | Padrões plantados encontrados | Números inventados | Tempo médio |
 |---|---|---|---|
-| **gemini-3.6-flash, raciocínio mínimo** (configuração final) | **4/4 em 3 de 3 execuções** | nenhum | ~15 s |
+| **gemini-3.6-flash, raciocínio mínimo** (configuração final, revalidado em 15/11 com o prompt atual) | **4/4 em 3 de 3 execuções** | 1 em 3 execuções: somou dois excessos (133 + 130 = 263), conta correta, mas que não estava no resumo | ~6 s |
+| **Base sem padrões** (gemini-3.6-flash, modelo principal, 15/11) | 2 padrões apontados em 3 de 3 execuções, todos de bicicleta, sem inventar padrão de região, hora ou restaurante | nenhum | ~3 s |
 | gemini-3.6-flash, raciocínio padrão (antes dos ajustes) | 4/4 em 1 de 3 (Zona Leste falhou em 2) | a IA recalculou contagens | ~26 s |
 | gemini-3.5-flash-lite (modelo reserva) | 3/4 em 3 de 3 (não acha a Zona Leste) | nenhum | ~4 s |
-| **Base sem padrões** (reserva lite) | apontou só "bicicleta em rota longa" | nenhum | ~2 s |
+| Base sem padrões (reserva lite, teste anterior) | apontou só "bicicleta em rota longa" | nenhum | ~2 s |
 
 As saídas completas estão em [`resultados_validacao/`](./resultados_validacao).
+
+Na base sem padrões, o modelo principal apontou "bicicleta acima de 4 km" (23,3% contra 5,3% da média, efeito real do gerador) e também "bicicleta até 4 km" (11,4%), que fica só 6,1 pontos acima da média, abaixo do limite de 8 pontos do prompt. É um deslize pequeno e honesto de registrar; o limite não foi alterado.
 
 ### O que a validação me ensinou
 

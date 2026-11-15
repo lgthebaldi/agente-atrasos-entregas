@@ -1,0 +1,111 @@
+{
+  "base": "data/entregas_controle.csv",
+  "controle": true,
+  "resultados": [
+    {
+      "execucao": 1,
+      "modelo": "gemini-3.6-flash",
+      "nivel": "minimal",
+      "segundos": 3.0,
+      "encontrados": {
+        "Chuva no pico do jantar": false,
+        "Bicicleta acima de 4 km": true,
+        "Restaurantes com gargalo": false,
+        "Zona Leste": false
+      },
+      "extras": [],
+      "numeros_suspeitos": [],
+      "n_padroes": 2,
+      "diagnostico": {
+        "resumo": "A principal causa de atrasos na plataforma está concentrada nas entregas realizadas por ciclistas, principalmente em trajetos longos. Os demais segmentos analisados, como regiões, horários e restaurantes, não apresentaram variações relevantes que justifiquem um padrão de atraso isolado.",
+        "padroes": [
+          {
+            "padrao": "Entregas de bicicleta acima de 4 km",
+            "evidencia": "A taxa de atraso para entregas de bicicleta em trajetos acima de 4 km é de 23,3% (128 atrasos em 550 pedidos), gerando 99 atrasos acima do esperado em relação à taxa geral de 5,3%.",
+            "causa_provavel": "Limitação física e velocidade reduzida do modal cicloviário para cobrir longas distâncias dentro do prazo estimado.",
+            "acao_sugerida": "Limitar o raio máximo de entrega para entregadores parceiros de bicicleta em até 4 km no aplicativo.",
+            "metrica_para_acompanhar": "Taxa de atraso em entregas por bicicleta acima de 4 km"
+          },
+          {
+            "padrao": "Entregas de bicicleta até 4 km",
+            "evidencia": "A taxa de atraso para entregas de bicicleta em trajetos de até 4 km é de 11,4% (79 atrasos em 691 pedidos), gerando 42 atrasos acima do esperado em relação à taxa geral de 5,3%.",
+            "causa_provavel": "Falta de adequação dos tempos estimados de deslocamento para ciclistas mesmo em rotas curtas.",
+            "acao_sugerida": "Recalibrar o tempo estimado de entrega (ETA) exibido ao cliente para a opção de bicicleta em distâncias curtas.",
+            "metrica_para_acompanhar": "Taxa de atraso em entregas por bicicleta até 4 km"
+          }
+        ],
+        "limitacoes": "Os dados fornecidos não contêm variações suficientes (diferença mínima de 8 pontos percentuais acima da média geral) para identificar padrões claros de atraso em relação a horários específicos, condições de chuva isoladas, dias da semana, restaurantes ou regiões."
+      }
+    },
+    {
+      "execucao": 2,
+      "modelo": "gemini-3.6-flash",
+      "nivel": "minimal",
+      "segundos": 3.1,
+      "encontrados": {
+        "Chuva no pico do jantar": false,
+        "Bicicleta acima de 4 km": true,
+        "Restaurantes com gargalo": false,
+        "Zona Leste": false
+      },
+      "extras": [],
+      "numeros_suspeitos": [],
+      "n_padroes": 2,
+      "diagnostico": {
+        "resumo": "Identificamos que a utilização de bicicletas para entregas de longa distância é o principal fator causador de atrasos na plataforma. O ajuste no raio de atendimento desse veículo tem o potencial de eliminar quase que totalidade dos atrasos em excesso registrados.",
+        "padroes": [
+          {
+            "padrao": "Entregas de bicicleta acima de 4 km",
+            "evidencia": "Taxa de atraso de 23,3% contra 5,3% da média geral (com 550 pedidos analisados), gerando 99 atrasos acima do esperado.",
+            "causa_provavel": "Limitação física e velocidade reduzida do modal cicloviário para percorrer longas distâncias no tempo estimado.",
+            "acao_sugerida": "Restringir o raio máximo de alocação de entregadores parceiros de bicicleta para rotas de até 4 km.",
+            "metrica_para_acompanhar": "Taxa de atraso em entregas de bicicleta acima de 4 km"
+          },
+          {
+            "padrao": "Entregas de bicicleta em distâncias curtas (até 4 km)",
+            "evidencia": "Taxa de atraso de 11,4% contra 5,3% da média geral (com 691 pedidos analisados), gerando 42 atrasos acima do esperado.",
+            "causa_provavel": "Incompatibilidade no tempo estimado de deslocamento em vias urbanas em comparação com veículos motorizados.",
+            "acao_sugerida": "Recalibrar o tempo estimado de entrega exibido ao cliente para entregas de bicicleta em distâncias curtas.",
+            "metrica_para_acompanhar": "Taxa de atraso do modal bicicleta em rotas de até 4 km"
+          }
+        ],
+        "limitacoes": "Os dados disponíveis não trazem detalhes sobre o perfil dos entregadores (ex.: experiência ou tipo de bicicleta) nem sobre o tráfego urbano em tempo real. Além disso, outros fatores como regiões ou horários isolados não apresentaram diferenças superiores a 8 pontos percentuais em relação à média geral para sustentar padrões claros."
+      }
+    },
+    {
+      "execucao": 3,
+      "modelo": "gemini-3.6-flash",
+      "nivel": "minimal",
+      "segundos": 3.1,
+      "encontrados": {
+        "Chuva no pico do jantar": false,
+        "Bicicleta acima de 4 km": true,
+        "Restaurantes com gargalo": false,
+        "Zona Leste": false
+      },
+      "extras": [],
+      "numeros_suspeitos": [],
+      "n_padroes": 2,
+      "diagnostico": {
+        "resumo": "Identificou-se que o principal fator determinante para os atrasos na plataforma é o uso de bicicletas em entregas de longa distância. Os demais segmentos analisados não apresentaram diferenças relevantes em relação à taxa média geral de atrasos.",
+        "padroes": [
+          {
+            "padrao": "Entregas por bicicleta acima de 4 km",
+            "evidencia": "Taxa de atraso de 23,3% frente à média geral de 5,3% (n = 550), gerando 99 atrasos acima do esperado.",
+            "causa_provavel": "Incompatibilidade do modal aquecido com distâncias longas, onde o esforço físico e o trânsito reduzem drasticamente a velocidade média do ciclista.",
+            "acao_sugerida": "Limitar o raio máximo de alocação de pedidos para o modal bicicleta em até 4 km de distância.",
+            "metrica_para_acompanhar": "Taxa de atraso em entregas por bicicleta acima de 4 km."
+          },
+          {
+            "padrao": "Entregas por bicicleta em distâncias curtas (até 4 km)",
+            "evidencia": "Taxa de atraso de 11,4% frente à média geral de 5,3% (n = 691), gerando 42 atrasos acima do esperado.",
+            "causa_provavel": "Menor velocidade média operacional das bicicletas em comparação com veículos motorizados, mesmo em trajetos curtos.",
+            "acao_sugerida": "Ajustar o tempo estimado de entrega exibido ao cliente para rotas de bicicleta até 4 km, adequando o prazo à realidade da modalidade.",
+            "metrica_para_acompanhar": "Taxa de atraso do modal bicicleta até 4 km."
+          }
+        ],
+        "limitacoes": "Os dados fornecidos não detalham fatores operacionais internos dos restaurantes (como gargalos pontuais na cozinha) nem o perfil do trânsito no momento exato das entregas. Além disso, não foram identificadas combinações com diferença superior a 8 pontos percentuais em fatores como chuva, horários de pico ou regiões específicas."
+      }
+    }
+  ]
+}
