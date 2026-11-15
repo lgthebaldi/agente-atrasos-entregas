@@ -16,6 +16,7 @@ import analise
 
 BASE_EXEMPLO = Path(__file__).parent / "data" / "entregas_ficticias.csv"
 DIAGNOSTICO_SALVO = Path(__file__).parent / "data" / "diagnostico_exemplo.json"
+PASTA_VALIDACAO = Path(__file__).parent / "resultados_validacao"
 ORIGEM_EXEMPLO = "Base de exemplo (fictícia)"
 COR_BARRA = "#2a78d6"     # azul (série única)
 COR_REFERENCIA = "#898781"  # cinza neutro para a linha da média
@@ -344,6 +345,71 @@ def tela_mapa(d: pd.DataFrame):
                                        "taxa_atraso_pct": "% atrasados"}), hide_index=True, width="stretch")
 
 
+# ---------- validação ----------
+# Execuções medidas em 15/11 com o prompt atual (arquivos em resultados_validacao/).
+RODADAS_VALIDACAO = [
+    ("Gemini · base de exemplo", ["gemini_positivo_v2.json"], False),
+    ("Groq (qwen) · base de exemplo", ["groq_positivo.json"], False),
+    ("Gemini · base sem padrões", ["gemini_controle_v2.json"], True),
+    ("Groq (qwen) · base sem padrões", ["groq_controle.json", "groq_controle_3.json"], True),
+]
+
+
+def _resultados_validacao(arquivos: list[str]) -> list[dict]:
+    rs = []
+    for nome in arquivos:
+        rs += json.loads((PASTA_VALIDACAO / nome).read_text(encoding="utf-8"))["resultados"]
+    return [r for r in rs if "diagnostico" in r]  # execuções que falharam por cota não contam
+
+
+def tela_validacao():
+    st.subheader("Como sei que o diagnóstico está certo?")
+    st.markdown(
+        "A base de exemplo tem **4 padrões plantados de propósito**: chuva no pico do jantar, "
+        "bicicleta acima de 4 km, dois restaurantes com gargalo na cozinha e a Zona Leste. "
+        "Rodei o agente várias vezes e conferi automaticamente duas coisas: se ele **encontra** "
+        "esses padrões e se **inventa números** que não estavam no resumo. "
+        "Também testei uma base **sem nenhum padrão**, para ver se a IA inventa um."
+    )
+    linhas = []
+    for nome, arquivos, controle in RODADAS_VALIDACAO:
+        try:
+            rs = _resultados_validacao(arquivos)
+        except (OSError, ValueError, KeyError):
+            continue
+        if not rs:
+            continue
+        suspeitos = sum(1 for r in rs if r.get("numeros_suspeitos"))
+        if controle:
+            apontados = sorted({p["padrao"] for r in rs for p in r["diagnostico"]["padroes"]})
+            resultado = f"{max(r['n_padroes'] for r in rs)} padrões por execução, todos de bicicleta"
+            if any("bicicleta" not in _norm_txt(p) for p in apontados):
+                resultado = "apontou também outros segmentos: veja os arquivos de resultado"
+        else:
+            achou = sum(sum(r["encontrados"].values()) for r in rs)
+            resultado = f"{achou} de {4 * len(rs)} padrões plantados encontrados"
+        linhas.append({"Teste": nome, "Execuções": len(rs), "Resultado": resultado,
+                       "Execuções com número fora do resumo": suspeitos})
+    if linhas:
+        st.dataframe(pd.DataFrame(linhas), hide_index=True, width="stretch")
+    st.markdown(
+        "**Como ler a base sem padrões:** a bicicleta em rota longa ainda atrasa (23,3% contra "
+        "5,3% da média). Isso não foi plantado, é física: ela anda mais devagar do que o prazo "
+        "prometido supõe. Apontar esse efeito não é inventar; inventar seria achar padrão em "
+        "região, horário ou restaurante, e isso não aconteceu.\n\n"
+        "**O que aprendi:** a IA chegou a fazer contas por conta própria e a forçar padrões fracos. "
+        "A correção foi do lado dos dados: o pandas passou a calcular o impacto e a marcar quais "
+        "segmentos são relevantes (pelo menos 50 pedidos e 8 pontos acima da média), "
+        "e a IA só explica. O limite de 8 pontos não foi baixado para o teste passar."
+    )
+    st.caption("Dados fictícios, poucas execuções por teste: é uma evidência, não uma garantia. "
+               "Resultados completos em resultados_validacao/ no repositório.")
+
+
+def _norm_txt(texto: str) -> str:
+    return texto.lower()
+
+
 # ---------- app ----------
 if "df" not in st.session_state:
     tela_inicio()
@@ -356,8 +422,9 @@ else:
             st.session_state.pop(chave, None)
         st.rerun()
     st.title("🛵 Diagnóstico de atrasos")
-    aba1, aba_mapa, aba2, aba3 = st.tabs(
-        ["📊 Visão geral", "🗺️ Mapa", "📍 Onde está o atraso", "🤖 Diagnóstico da IA"])
+    aba1, aba_mapa, aba2, aba3, aba4 = st.tabs(
+        ["📊 Visão geral", "🗺️ Mapa", "📍 Onde está o atraso", "🤖 Diagnóstico da IA",
+         "✅ Como validei"])
     with aba1:
         tela_visao_geral(d)
     with aba2:
@@ -366,3 +433,5 @@ else:
         tela_mapa(d)
     with aba3:
         tela_diagnostico(d)
+    with aba4:
+        tela_validacao()
