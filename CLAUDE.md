@@ -38,7 +38,7 @@
 ### Pendências, em ordem
 1. **Conferir o deploy:** `GROQ_API_KEY` nos Secrets do Streamlit Cloud e um diagnóstico gerado no link público (janela anônima). A primeira visita gasta uma chamada, pois o cache começa vazio.
 2. (Feito em 15/11) Aba "Como validei" no app, lendo `resultados_validacao/`.
-3. (Opcional) O pandas mandar o impacto combinado dos dois restaurantes com gargalo, para a IA não somar sozinha.
+3. (Feito em 15/11) O pandas manda o impacto combinado dos restaurantes com gargalo (`restaurantes_relevantes_juntos`); validado em Gemini e Groq, com só 2 execuções do negativo no Gemini por causa da cota.
 
 ### Não fazer
 - Não baixar o limite de 8 pontos só para o teste passar (corrija a causa, como o impacto já calculado pelo pandas).
