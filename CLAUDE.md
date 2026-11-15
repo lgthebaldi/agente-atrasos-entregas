@@ -13,7 +13,7 @@
 - App no ar: https://agente-atrasos.streamlit.app · Repositório: https://github.com/lgthebaldi/agente-atrasos-entregas
 - `main` tem: análise com pandas, 4 abas (Visão geral, **Mapa** de São Paulo com filtros, Onde está o atraso, Diagnóstico da IA), agente com Gemini (`gemini-3.6-flash`, raciocínio `minimal`), `validacao.py`, README com GIF, LICENSE e `cover.png`.
 - **O Streamlit Cloud publica sozinho a cada push no `main`.** Mudança de código arriscada vai em branch e só entra no `main` depois de testada.
-- Branch `groq-reserva`: integração com o Groq (`qwen/qwen3.8-27b`). **Não está no `main`** (ver pendência 2).
+- Branch `groq-reserva`: integração com o Groq (`qwen/qwen3.8-27b`). **Não está no `main`** (ver pendência 2). O histórico do `main` foi reescrito em 14/11 (commits passaram para o nome do Luis), então `groq-reserva` ainda aponta para a base antiga: **faça rebase sobre o `main` atual antes de mesclar** (nunca force push no `main`).
 - Commits saem no nome do Luis (git config local) e mantêm o Claude como coautor.
 
 ### Chaves numa sessão de nuvem (leia antes de dizer "falta chave")
